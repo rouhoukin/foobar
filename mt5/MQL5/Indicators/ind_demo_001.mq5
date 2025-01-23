@@ -126,8 +126,8 @@ int OnCalculate(const int rates_total,
             Print("time=[",i,"]=",t);
             printf("macd_st=%g",macd_st);
             printf("ExtBuffer[%d]=%g",i,ExtBuffer[i]);
-            printf("ExtWorkBuffer_sma_fast[%d]=%g",i,ExtWorkBuffer_macd_fast[i]);
-            printf("ExtWorkBuffer_slow_slow[%d]=%g",i,ExtWorkBuffer_macd_slow[i]);
+            printf("ExtWorkBuffer_sma_fast[%d]=%g",i,ExtWorkBuffer_sma_fast[i]);
+            printf("ExtWorkBuffer_slow_slow[%d]=%g",i,ExtWorkBuffer_sma_slow[i]);
         }
         */
     }
