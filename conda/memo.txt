@@ -1,0 +1,18 @@
+conda list
+conda env list
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/main/
+conda config --show channels
+conda info
+conda update -n base -c defaults conda
+conda update conda
+conda create -n bar python=3.7
+conda activate bar
+conda env export > bar.yml
+conda deactivate
+conda remove -n bar --all
+conda install pandas
+conda install pymongo
+conda install jinja2==3.0.3
