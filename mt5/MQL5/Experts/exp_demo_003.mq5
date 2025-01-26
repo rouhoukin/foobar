@@ -6,9 +6,10 @@
 #property copyright "Copyright 2025, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
 #property version   "1.00"
+
 //--- input
-input string    i_sig_ind="ind_demo_002";   //i_sig_ind:for in and out signal
-input string    i_lvl_ind="ind_demo_003";   //i_sta_ind:for stop loss level
+input string    i_sig_ind="ind_demo_001";   //i_sig_ind:for in and out signal
+input string    i_lvl_ind="ind_demo_002";   //i_sta_ind:for stop loss level
 input double    i_lots=0.01;                //i_lots:
 input bool      i_debug=true;
 
@@ -333,7 +334,7 @@ bool OrderBuy(double argLsPrice, double argPsPrice, int argMag, string argCom, u
     MqlTradeResult result = {};
     request.action = act;
     request.type = cmd;
-    request.type_filling = ORDER_FILLING_FOK;
+    request.type_filling = ORDER_FILLING_IOC;   //depend on broker
     request.symbol = Symbol();
     request.price = price;
     request.deviation = 5;
@@ -397,7 +398,7 @@ bool OrderSell(double argLsPrice, double argPsPrice, int argMag, string argCom, 
     MqlTradeResult result = {};
     request.action = act;
     request.type = cmd;
-    request.type_filling = ORDER_FILLING_FOK;
+    request.type_filling = ORDER_FILLING_IOC;   //depend on broker
     request.symbol = Symbol();
     request.price = price;
     request.deviation = 5;
@@ -445,7 +446,7 @@ bool OrderClose(ulong argTic)
         request.volume      = ord_volume;           // volume of the position
         request.deviation   = 5;                    // allowed deviation from the price
         request.comment     = "close";              // comment
-        request.type_filling = ORDER_FILLING_FOK;
+        request.type_filling = ORDER_FILLING_IOC;
         //--- set the price and order type depending on the position type
         if(ord_type==POSITION_TYPE_BUY) {
             request.price=SymbolInfoDouble(ord_symbol,SYMBOL_BID);
