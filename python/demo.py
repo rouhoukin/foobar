@@ -54,6 +54,50 @@ paras = {
                             ]],
 }
 
+paras4 = {
+    'EURUSD': 1,
+
+    'USDJPY': 2,
+    'GBPUSD': 3,
+    'USDCHF': 4,
+    'AUDUSD': 5,
+    'NZDUSD': 6,
+    'USDCAD': 7,
+
+    'EURJPY': 8,
+    'EURCHF': 9,
+    'EURGBP': 10,
+    'EURAUD': 11,
+    'EURNZD': 12,
+    'EURCAD': 13,
+
+    'CHFJPY': 14,
+    'GBPJPY': 15,
+    'AUDJPY': 16,
+    'NZDJPY': 17,
+    'CADJPY': 18,
+
+    'GBPCHF': 19,
+    'AUDCHF': 20,
+    'NZDCHF': 21,
+    'CADCHF': 22,
+
+    'GBPAUD': 23,
+    'GBPNZD': 24,
+    'GBPCAD': 25,
+
+    'AUDNZD': 26,
+    'AUDCAD': 27,
+
+    'NZDCAD': 28,
+
+    'XAUUSD': 29,
+    'XTIUSD': 30,
+    'WS30': 31,
+    'NDX': 32,
+    'SP500': 33,
+}
+
 ped_secs = {
     'M1': 60, 'M5': 60 * 5, 'M15': 60 * 15, 'M30': 60 * 30,
     'H1': 60 * 60, 'H4': 60 * 60 * 4, 'D1': 60 * 60 * 24,
@@ -71,7 +115,7 @@ def get_newest_from_db(clt=client, cur='EURUSD', period=''):
     if len(period) > 0:
         _col_nm = broker + '_' + cur + '_' + 'MT5' + '_' + period
 
-    _collection = clt['fx'][_col_nm]
+    _collection = clt['foobar'][_col_nm]
     lst = list(_collection.find().sort("DT_MT4_OUT", pymongo.DESCENDING).limit(1))
     _newest = None
     if lst:
@@ -80,6 +124,94 @@ def get_newest_from_db(clt=client, cur='EURUSD', period=''):
     # print('tg=', tg, 'newest=', _newest)
     logger.info("Get newest date={0} from DB ({1})".format(_newest, _col_nm))
     return _newest
+
+
+def get_first_from_db2(clt=client, colnm='DEMO_EURUSD_MT5_H1', fld='DT_MT4_OUT'):
+    _col_nm = colnm
+    _collection = clt['foobar'][_col_nm]
+    logger.info("Read first data ({1}) from DB ({0})...".format(_col_nm, fld))
+
+    lst = list(_collection.find().sort("DT_MT4_OUT", pymongo.ASCENDING).limit(1))
+    _first = None
+    if lst:
+        _first = dict(lst[0])[fld]
+
+    logger.info("Get first {0}={1} from DB ({2})".format(fld, _first, _col_nm))
+    return _first
+
+
+def delete_from_db(clt=client, colnm='DEMO_H1_ANA_STG', qry=None):
+    if qry is None:
+        qry = {"key": {"$regex": "EURUSD DEMO"}}
+    _col_nm = colnm
+    _collection = clt['foobar'][_col_nm]
+    logger.info("deleting records to {0} as {1}...".format(_col_nm, qry))
+
+    start = time()
+    try:
+        res = _collection.delete_many(qry)
+    except errors.BulkWriteError as e:
+        logger.error(str(e), exc_info=False)
+        print(str(e))
+
+    logger.info("deleted {1} records. used {0} second(s)".format(round(time() - start, 3), res.deleted_count))
+
+
+def get_newest_from_db3(clt=client, colnm='DEMO_EURUSD_MT5_H1_ANA', fld='DT_MT4_OUT', qry=None, bak=1):
+    if qry is None:
+        qry = {}
+    _col_nm = colnm
+    _collection = clt['foobar'][_col_nm]
+    logger.info("Read newest data ({1}) from DB ({0}) as {2} ...".format(_col_nm, fld, qry))
+
+    _newest = None
+    _newest2 = None
+    lst = list(_collection.find(qry).sort(fld, pymongo.DESCENDING).limit(bak))
+    if lst:
+        _newest = dict(lst[0])[fld]
+        _newest2 = dict(lst[-1])[fld]
+
+    logger.info("Get newest {0}={1}/{2} from DB ({3})".format(fld, _newest, _newest2, _col_nm))
+    return (_newest, _newest2)
+
+
+def read_cur_from_db2(clt=client, cur='EURUSD', period='H1', from_dt='2020-12-01 00', to_dt='2020-12-31 23'):
+    _col_nm = broker + '_' + cur + '_MT5_' + period
+    logger.info("Read data ({1}) - ({2}) from DB ({0})...".format(_col_nm, from_dt, to_dt))
+    # print("Read data ({0}) from db, please wait...".format(col_nm))
+    _collection = clt['foobar'][_col_nm]
+    _df = pd.DataFrame(list(_collection.find(
+        {"$query": {"$and": [{"DT_MT4_OUT": {"$gte": from_dt}}, {"DT_MT4_OUT": {"$lt": to_dt}}]},
+         "$orderby": {"DT_MT4_OUT": 1}},
+        {"_id": 0, "key": 0, "UPD_BY": 0}
+    )))
+    logger.info("Read data {} OK".format(len(_df.index)))
+    # print("Read OK")
+    return _df
+
+
+def write_df_to_db(df, clt=client, colnm='DEMO_EURUSD_MT5_H1_ANA'):
+    # _col_nm = broker + '_' + curtp + '_' + stg  + '_ANA'
+    _col_nm = colnm
+    _collection = clt['foobar'][_col_nm]
+    # collection = client['fx'][_col_nm]
+    _collection.create_index([('key', pymongo.ASCENDING)], unique=True)
+
+    cnt = len(df.index)
+    logger.info("writing {0} records to {1}...".format(cnt, _col_nm))
+    start = time()
+
+    cnt2 = 0
+    for i, row in df.iterrows():
+        data = row.to_dict()
+        # print(data['key'])
+        flt = {'key': data['key']}
+        _collection.update_one(flt, {'$set': data}, upsert=True)
+        cnt2 += 1
+        if cnt2 % 5000 == 0:
+            logger.info("writing {0}/{1}({2}%) data".format(cnt2, cnt, round(cnt2 / cnt * 100 - 0.5, 1)))
+
+    logger.info("writing end. used {} second(s)".format(round(time() - start, 3)))
 
 
 def main(argv):
@@ -102,7 +234,7 @@ def main(argv):
         sys.exit()
 
     elif method == '1':  # gen each period data from mt5
-        # TODO: 1 -2025/1/27
+        # TODO: 1-2025/1/27
         logger.info("{0} Getting period data...".format(method))
         for mt5_path in mt5_paths:
             if not mt5.initialize(mt5_path, portable=True):
@@ -233,13 +365,135 @@ def main(argv):
 
         logger.info("{0} Getting period data end".format(method))
 
+    elif method == '2':  # gen mt5 ana data
+        logger.info("{0} Generate mt5 ana data...".format(method))
+        now = datetime.now()
+        ed = (now + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M')
+        # TODO: 2-2025/1/28
+        for target in paras.keys():
+            r = paras[target][1]
+            # logger.info("Process {0}...".format(target))
+            # print(target)
+            mss = {
+                   'H1': [120, 5],
+            }
+            if target in ['XAUUSD', 'XTIUSD', 'WS30', 'NDX', 'SP500']:
+                mss = {
+                       'H1': [115, 5],
+                }
+            peds = paras[target][2]
+            for ped in peds:
+                logger.info("Process {0} {1}...".format(target, ped))
+                ms = mss[ped]
+                # timezone = pytz.timezone("Etc/UTC")
+                col_nm = broker + '_' + target + '_MT5_' + ped + '_ANA'
+                if force_rebuild:
+                    delete_from_db(clt=client, colnm=col_nm, qry={})
+
+                first = False
+                query = {}
+                if force_from:
+                    query = {"key": {"$lte": force_from}}
+                latest_dt2, latest_dt = get_newest_from_db3(clt=client, colnm=col_nm, fld='key', qry=query,
+                                                   bak=ms[0] * ms[1])
+                if latest_dt is None:
+                    first = True
+                    col_nm2 = broker + '_' + target + '_MT5_' + ped
+                    first_dt = get_first_from_db2(clt=client, colnm=col_nm2, fld='DT_MT4_OUT')
+                    latest_dt = first_dt
+                last_dt = parse(latest_dt)
+                # last_dt = parse('2023-11-28 00:00:00')
+                # print(last_dt)
+                # exit(0)
+                sd = last_dt.strftime('%Y-%m-%d %H:%M')
+                df = read_cur_from_db2(clt=client, cur=target, period=ped, from_dt=sd, to_dt=ed)
+                # df.to_pickle('out/out_pickle')
+                # exit(0)
+                df.dropna(inplace=True)
+                if df.empty:
+                    # exit(0)
+                    continue
+                df['BROKER'] = broker
+                df['NAME'] = target
+                df['PERIOD'] = int(ped_secs[ped] / 60)
+                df['UPD_BY'] = now.strftime('%Y-%m-%d %H:%M:%S')
+                df['name_sort'] = df['NAME'].apply(lambda x: paras4[x])
+                df['key'] = df['DT_MT4_OUT']
+
+                df['T'] = pd.to_datetime(df['DT_MT4_OUT']).dt.strftime('%H:%M')
+                df['open'] = round(df['open'], int(np.log10(r)))
+                df['close'] = round(df['close'], int(np.log10(r)))
+                df['high'] = round(df['high'], int(np.log10(r)))
+                df['low'] = round(df['low'], int(np.log10(r)))
+                df['last_close'] = df['close'].shift(1).fillna(method='bfill')
+                df['next_close'] = df['close'].shift(-1).fillna(method='ffill')
+                df['close_lst'] = df['last_close']
+                df['close_nxt'] = df['next_close']
+                df['high_lst'] = df['high'].shift(1).fillna(method='bfill')
+                df['high_nxt'] = df['high'].shift(-1).fillna(method='ffill')
+                df['low_lst'] = df['low'].shift(1).fillna(method='bfill')
+                df['low_nxt'] = df['low'].shift(-1).fillna(method='ffill')
+                df['lowest'] = df[['open', 'high', 'low', 'close', 'last_close']].min(axis=1)
+                df['highest'] = df[['open', 'high', 'low', 'close', 'last_close']].max(axis=1)
+                for p, ma in (('s', ms[0]), ('m', ms[0] * ms[1])):
+                    # logger.info("Process {0}({1})...".format(p, ma))
+                    df2 = pd.DataFrame()
+
+                    for a, b in (
+                            ('c', 'close'),
+                            # ('l', 'low'), ('h', 'high')
+                    ):
+                        # logger.info("Process {0}({1})...".format(a, b))
+                        df3 = pd.DataFrame()
+
+                        _sma = '{0}_{1}_sma'.format(a, ma)
+                        df3[_sma] = round(df[b].rolling(ma).mean(), int(np.log10(r * 10)))
+
+                        df2 = pd.concat([df2, df3], axis=1)
+                        pass
+
+                    # _ma = 'c_{0}_ma'.format(ma)
+                    # df2[_ma] = ma
+
+                    _c_sma = 'c_{0}_sma'.format(ma)
+                    _last_c_sma = 'c_{0}_sma_lst'.format(ma)
+                    _next_c_sma = 'c_{0}_sma_nxt'.format(ma)
+                    df2[_last_c_sma] = df2[_c_sma].shift(1).fillna(method='bfill')
+                    df2[_next_c_sma] = df2[_c_sma].shift(-1).fillna(method='ffill')
+
+                    # df2.to_csv('out/df2_{0}.csv'.format(method), encoding='gbk', index=True)
+                    # exit(0)
+                    df = pd.concat([df, df2], axis=1)
+                    pass
+
+                # df.to_csv('out/df_{0}.csv'.format(method), encoding='gbk', index=True)
+                # df.to_pickle('out/out_pickle')
+                # exit(0)
+                # df = pd.DataFrame()
+                # df = pd.read_pickle('out/out_pickle')
+                if not latest_dt2 is None:
+                    df.drop(df[df['DT_MT4_OUT'] <= latest_dt2].index, inplace=True)
+                if df.empty:
+                    # exit(0)
+                    continue
+
+                # df.to_pickle('out/out_pickle')
+                # exit(0)
+                # df['key'] = df['DT_MT4_OUT']
+                col_nm = broker + '_' + target + '_MT5_' + ped + '_ANA'
+                # write_df_many_to_db(df=df, clt=client_rmt, colnm=col_nm)
+                write_df_to_db(df=df, clt=client, colnm=col_nm)
+                # write_df_bulk_to_db(df=df, clt=client_rmt, colnm=col_nm)
+                exit(0)
+
+        logger.info("{0} Generate mt5 ana data end".format(method))
 
 # TODO: main
 if __name__ == "__main__":
-    print(p_dir)
-    print(me)
+    # print(p_dir)
+    # print(me)
     # print('test')
-    exit(0)
-    # main(sys.argv)
+    # exit(0)
+    main(sys.argv)
 
 
