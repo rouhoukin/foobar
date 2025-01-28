@@ -236,10 +236,10 @@ def main(argv):
 
 # TODO: main
 if __name__ == "__main__":
-    print(p_dir)
-    print(me)
+    # print(p_dir)
+    # print(me)
     # print('test')
-    exit(0)
-    # main(sys.argv)
+    # exit(0)
+    main(sys.argv)
 
 
