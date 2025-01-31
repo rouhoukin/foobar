@@ -140,6 +140,24 @@ def get_first_from_db2(clt=client, colnm='DEMO_EURUSD_MT5_H1', fld='DT_MT4_OUT')
     return _first
 
 
+def get_first_from_db3(clt=client, colnm='DEMO_EURUSD_MT5_H1', fld='DT_MT4_OUT', qry=None, bak=1):
+    if qry is None:
+        qry = {}
+    _col_nm = colnm
+    _collection = clt['foobar'][_col_nm]
+    logger.info("Read first data ({1}) from DB ({0}) as {2} ...".format(_col_nm, fld, qry))
+
+    _first = None
+    _first2 = None
+    lst = list(_collection.find(qry).sort(fld, pymongo.ASCENDING).limit(bak))
+    if lst:
+        _first = dict(lst[0])[fld]
+        _first2 = dict(lst[-1])[fld]
+
+    logger.info("Get first {0}={1}/{2} from DB ({3})".format(fld, _first, _first2, _col_nm))
+    return _first, _first2
+
+
 def delete_from_db(clt=client, colnm='DEMO_H1_ANA_STG', qry=None):
     if qry is None:
         qry = {"key": {"$regex": "EURUSD DEMO"}}
@@ -172,7 +190,23 @@ def get_newest_from_db3(clt=client, colnm='DEMO_EURUSD_MT5_H1_ANA', fld='DT_MT4_
         _newest2 = dict(lst[-1])[fld]
 
     logger.info("Get newest {0}={1}/{2} from DB ({3})".format(fld, _newest, _newest2, _col_nm))
-    return (_newest, _newest2)
+    return _newest, _newest2
+
+
+def read_df_from_db(clt=client, colnm='DEMO_EURUSD_MT5_ANA', s_fld='key', qry=None):
+    if qry is None:
+        qry = {"key": {"$regex": "EURUSD.*120_5"}}
+    _col_nm = colnm
+    _collection = clt['foobar'][_col_nm]
+    logger.info("Read data ({1}) from DB ({0})...".format(_col_nm, qry))
+    _df = pd.DataFrame(list(_collection.find(
+        {"$query": qry,
+         # "$orderby": {s_fld: 1}
+         },
+        {"_id": 0, "key": 0}
+    )))
+    logger.info("Read data {} OK".format(len(_df.index)))
+    return _df
 
 
 def read_cur_from_db2(clt=client, cur='EURUSD', period='H1', from_dt='2020-12-01 00', to_dt='2020-12-31 23'):
@@ -487,6 +521,159 @@ def main(argv):
                 exit(0)
 
         logger.info("{0} Generate mt5 ana data end".format(method))
+
+    elif method == '3':  # gen mt5 ana's agg data
+        logger.info("{0} Generate mt5 ana's agg data...".format(method))
+        now = datetime.now()
+        ed = (now + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M')
+        # TODO: 3-2025/1/29
+        mss = {
+            'H1': [120, 5],
+        }
+        for target in paras.keys():
+            r = paras[target][1]
+            peds = paras[target][2]
+            for ped in peds:
+                mas = mss[ped]
+                ma, ma2r = mas
+                ma2 = ma * ma2r
+                logger.info("Process {0} {1} {2}_{3} ...".format(target, ped, ma, ma2r))
+                if force_rebuild:
+                    col_nm = broker + '_' + target + '_MT5_ANA_AGG'
+                    query = {"key": {"$regex": "^{0} {1} {2}_{3}".format(target, ped, ma, ma2r)}}
+                    delete_from_db(clt=client, colnm=col_nm, qry=query)
+
+                col_nm = broker + '_' + target + '_MT5_ANA_AGG'
+                query = {"key": {"$regex": "^{0} {1} {2}_{3}".format(target, ped, ma, ma2r)}}
+                if force_from:
+                    query["end"] = {"$lt": force_from}
+                latest_dt2, latest_dt = get_newest_from_db3(clt=client, colnm=col_nm, fld='end', qry=query, bak=2)
+                first = False
+                if not latest_dt:
+                    first = True
+                    col_nm2 = broker + '_' + target + '_MT5_' + ped + '_ANA'
+                    first_dt, _ = get_first_from_db3(clt=client, colnm=col_nm2, fld='key')
+                    latest_dt = first_dt
+                if not first:
+                    last_dt = parse(latest_dt) + timedelta(seconds=ped_secs[ped] * 1)
+                else:
+                    last_dt = parse(latest_dt)
+                print(last_dt)
+                # exit(0)
+                if force_from and latest_dt:
+                    # delete AGG data
+                    col_nm = broker + '_' + target + '_MT5_ANA_AGG'
+                    query = {"start": {"$gte": latest_dt}}
+                    delete_from_db(clt=client, colnm=col_nm, qry=query)
+                # exit(0)
+                col_nm = broker + '_' + target + '_MT5_' + ped + '_ANA'
+                query = {"key": {"$gte": "{0}".format(last_dt.strftime('%Y-%m-%d %H:%M:%S'))}}
+                df = read_df_from_db(clt=client, colnm=col_nm, qry=query)
+                if df.empty:
+                    # exit(0)
+                    continue
+                df['ma_120_600'] = np.where(df['c_120_sma'] > df['c_600_sma'], 1, 0)
+                df['ma_120_600'] = np.where(df['c_120_sma'] < df['c_600_sma'], -1, 0)
+                df['ma_120_600_grp'] = df['ma_120_600'].ne(df['ma_120_600'].shift()).cumsum()
+                # df.to_pickle('out/out_pickle')
+                # exit(0)
+                # df = pd.read_pickle('out/out_pickle')
+                aggfunc = {
+                    'NAME': [('name', 'first')],
+                    'PERIOD': [('period', 'first')],
+                    'DT_MT4_OUT': [('start', lambda x: x.iat[0]), ('end', lambda x: x.iat[-1])],
+                    'ma_120_600_grp': [('ma_120_600_grp', 'first'), ('ma_120_600_len', 'count')],
+
+                    'open': [('open_st', 'first')],
+                    'close': [('open', 'first'), ('close_st', 'first')],
+                    'close_nxt': [('close', 'last')],
+                    'high': [('highest', 'max'), ('high_st', 'first')],
+                    'low': [('lowest', 'min'), ('low_st', 'first')],
+
+                    'c_120_sma': [('c_120_sma_st', 'first'), ('c_120_sma_lst', 'last')],
+                    'c_600_sma': [('c_600_sma_st', 'first'), ('c_600_sma_lst', 'last')],
+                }
+                grouper = df['ma_120_600_grp']
+                v = df.assign(key=grouper).groupby('key').agg(aggfunc)
+                v.columns = v.columns.droplevel(0)
+                _df = v.reset_index(drop=True)
+
+                df4 = _df.copy()
+                # df4.to_pickle('out/out_pickle4')
+                # exit(0)
+                # df4 = pd.read_pickle('out/out_pickle4')
+
+                df4['start_dt'] = pd.to_datetime(df4['start'])
+                df4['year'] = df4['start_dt'].dt.year.apply(lambda x: '{0}'.format(x))
+                df4['month'] = df4['start_dt'].dt.month.apply(lambda x: '{:02d}'.format(x))
+                df4['week'] = df4['start_dt'].apply(lambda x: (x - timedelta(days=x.weekday())).strftime('%W(%d-)'))
+                df4['week2'] = df4['start_dt'].apply(
+                    lambda x: (x - timedelta(days=x.weekday())).strftime('%Y_%W(%m/%d-)'))
+                df4['day'] = df4['start_dt'].dt.day.apply(lambda x: '{:02d}'.format(x))
+                df4['day2'] = df4['start_dt'].dt.strftime('%d(%Y_%W)')
+                df4['day3'] = df4['start_dt'].dt.strftime('%d(%Y_%m)')
+                df4['hour'] = df4['start_dt'].dt.hour
+
+                df5 = df4.copy()
+                # df5.to_pickle('out/out_pickle5')
+                # exit(0)
+                # df5 = pd.read_pickle('out/out_pickle5')
+                df5['type'] = 0
+                df5.loc[
+                    (df5['c_120_sma_st'] > df5['c_600_sma_st'])
+                    & ~(df5['ma_120_600_grp'].isna()),
+                    'type'
+                ] = 1
+                df5.loc[
+                    (df5['c_120_sma_st'] < df5['c_600_sma_st'])
+                    & ~(df5['ma_120_600_grp'].isna()),
+                    'type'
+                ] = -1
+                df5.loc[df5['type'] > 0, 'ma_120_600_pft'] = (df5['close'] - df5['open']) * r
+                df5.loc[df5['type'] < 0, 'ma_120_600_pft'] = (df5['open'] - df5['close']) * r
+                df5['success'] = 0
+                df5['fail'] = 0
+                df5['grp'] = df5['ma_120_600_grp']
+
+                df5.loc[df5['ma_120_600_pft'] > 0, 'success'] = 1
+                df5.loc[df5['success'] == 0, 'fail'] = 1
+
+                df5.loc[df5['type'] > 0, 'p_max'] = (df5['highest'] - df5['open']) * r
+                df5.loc[df5['type'] < 0, 'p_max'] = (df5['open'] - df5['lowest']) * r
+
+                # df5['p'] = df5['ma_120_600_pft']
+                df5['p'] = 0
+                df5.loc[df5['success'] > 0, 'p'] = df5['ma_120_600_pft']
+                df5['r'] = 0
+                df5.loc[df5['p'] >= 0, 'r'] = 0
+                df5.loc[df5['p'] < 0, 'r'] = df5['p'].abs()
+                # df5.loc[df5['r'] > 0, 'pr'] = df5['p'] / df5['r']
+                # df5.loc[df5['r'] > 0, 'pmr'] = df5['p_max'] / df5['r']
+
+                df5['t'] = df5['ma_120_600_len']
+
+                df5['p'] = round(df5['p'], 1)
+                df5['r'] = round(df5['r'], 1)
+                df5['p_max'] = round(df5['p_max'], 1)
+                # df5['pr'] = round(df5['pr'], 1)
+                # df5['pmr'] = round(df5['pmr'], 1)
+
+                # df5.to_pickle('out/out_pickle5')
+                # exit(0)
+
+                col_nm = broker + '_' + target + '_MT5_ANA_AGG'
+                df5['key'] = df5['name'] + ' ' + ped + ' ' + str(ma) + '_' + str(ma2r) + ' ' + df5['start']
+                # df5['key'] = "{0} {1} {2}_{3} {4}".format(df5['name'], ped, ma, ma2r, df5['start'])
+                df5['UPD_BY'] = now.strftime('%Y-%m-%d %H:%M:%S')
+                collection = client['foobar'][col_nm]
+                collection.create_index([('start', pymongo.ASCENDING)], unique=False)
+                collection.create_index([('end', pymongo.ASCENDING)], unique=False)
+                write_df_to_db(df=df5, clt=client, colnm=col_nm)
+
+            pass
+
+        logger.info("{0} Generate mt5 ana's agg data end".format(method))
+
 
 # TODO: main
 if __name__ == "__main__":
