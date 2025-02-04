@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+    <meta charset="UTF-8">
+	<title>STG VIEW</title>
+	<link rel="stylesheet" type="text/css" href="jquery-easyui-1.9.7/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="jquery-easyui-1.9.7/themes/icon.css">
+	<script type="text/javascript" src="jquery-easyui-1.9.7/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery-easyui-1.9.7/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="echarts-5.0.1/echarts.min.js"></script>
+    <script type="text/javascript" src="k.js"></script>
+    <title>fx</title>
+</head>
+<style>
+.datagrid-header .datagrid-cell span {
+  font-size: 14px;
+}
+.datagrid-cell{
+  font-size: 14px;
+}
+</style>
+<body style="height: 100%; margin: 0">
+    <table cellspacing="5" cellpadding="5" border="0" style="font-size:14px;">
+    	<tbody>
+		<tr><td>
+                <b>[TARGET1]</b>
+            </td>
+    		<td><select id="cur1" name="cur1" style="font-size:13px;">
+		        <option value="EURUSD" selected>EURUSD★</option>
+		        <option value="USDJPY">USDJPY★</option>
+		        <option value="GBPUSD">GBPUSD★</option>
+		        <option value="AUDUSD">AUDUSD</option>
+		        <option value="NZDUSD">NZDUSD</option>
+		        <option value="USDCHF">USDCHF</option>
+		        <option value="USDCAD">USDCAD★</option>
+		        <option value="EURJPY">EURJPY</option>
+		        <option value="EURCHF">EURCHF</option>
+		        <option value="EURGBP">EURGBP</option>
+		        <option value="EURAUD">EURAUD★</option>
+		        <option value="EURNZD">EURNZD</option>
+		        <option value="EURCAD">EURCAD</option>
+		        <option value="CHFJPY">CHFJPY</option>
+		        <option value="GBPJPY">GBPJPY</option>
+		        <option value="AUDJPY">AUDJPY</option>
+		        <option value="NZDJPY">NZDJPY</option>
+		        <option value="CADJPY">CADJPY</option>
+		        <option value="GBPCHF">GBPCHF</option>
+		        <option value="AUDCHF">AUDCHF</option>
+		        <option value="NZDCHF">NZDCHF</option>
+		        <option value="CADCHF">CADCHF</option>
+		        <option value="GBPAUD">GBPAUD</option>
+		        <option value="GBPNZD">GBPNZD</option>
+		        <option value="GBPCAD">GBPCAD</option>
+		        <option value="AUDNZD">AUDNZD</option>
+		        <option value="AUDCAD">AUDCAD</option>
+		        <option value="NZDCAD">NZDCAD</option>
+		        <option value="XAUUSD">XAUUSD★</option>
+		        <option value="XTIUSD">XTIUSD★</option>
+		        <option value="WS30">WS30★</option>
+		        <option value="NDX">NDX★</option>
+		        <option value="SP500">SP500</option>
+    			</select>
+			</td>
+            <td>
+                <b>[STG1]</b>
+            </td>
+            <td><select id="stg1" name="stg1" style="font-size:14px;">
+                <option value="120_5" selected>120_600★</option>
+                </select>
+            </td>
+            <td>
+                <b>[TARGET2]</b>
+            </td>
+    		<td><select id="cur2" name="cur2" style="font-size:14px;">
+		        <option value="EURUSD" selected>EURUSD★</option>
+		        <option value="USDJPY">USDJPY★</option>
+		        <option value="GBPUSD">GBPUSD★</option>
+		        <option value="AUDUSD">AUDUSD</option>
+		        <option value="NZDUSD">NZDUSD</option>
+		        <option value="USDCHF">USDCHF</option>
+		        <option value="USDCAD">USDCAD★</option>
+		        <option value="EURJPY">EURJPY</option>
+		        <option value="EURCHF">EURCHF</option>
+		        <option value="EURGBP">EURGBP</option>
+		        <option value="EURAUD">EURAUD★</option>
+		        <option value="EURNZD">EURNZD</option>
+		        <option value="EURCAD">EURCAD</option>
+		        <option value="CHFJPY">CHFJPY</option>
+		        <option value="GBPJPY">GBPJPY</option>
+		        <option value="AUDJPY">AUDJPY</option>
+		        <option value="NZDJPY">NZDJPY</option>
+		        <option value="CADJPY">CADJPY</option>
+		        <option value="GBPCHF">GBPCHF</option>
+		        <option value="AUDCHF">AUDCHF</option>
+		        <option value="NZDCHF">NZDCHF</option>
+		        <option value="CADCHF">CADCHF</option>
+		        <option value="GBPAUD">GBPAUD</option>
+		        <option value="GBPNZD">GBPNZD</option>
+		        <option value="GBPCAD">GBPCAD</option>
+		        <option value="AUDNZD">AUDNZD</option>
+		        <option value="AUDCAD">AUDCAD</option>
+		        <option value="NZDCAD">NZDCAD</option>
+		        <option value="XAUUSD">XAUUSD★</option>
+		        <option value="XTIUSD">XTIUSD★</option>
+		        <option value="WS30">WS30★</option>
+		        <option value="NDX">NDX★</option>
+		        <option value="SP500">SP500</option>
+    			</select>
+			</td>
+            <td>
+                <b>[STG2]</b>
+            </td>
+            <td><select id="stg2" name="stg2" style="font-size:14px;">
+                <option value="120_5">120_600★</option>
+                </select>
+            </td>
+            <td>
+                <b>[MA]</b>
+            </td>
+            <td><select id="pdma" name="pdma" style="font-size:14px;">
+<!--                <option value="1_M15">M1_M15</option>-->
+<!--                <option value="1_H1">M1_H1</option>-->
+<!--                <option value="5_H1">M5_H1</option>-->
+<!--                <option value="5_H4">M5_H4★</option>-->
+<!--                <option value="15_H4">M15_H4</option>-->
+<!--                <option value="15_D1">M15_D1</option>-->
+                <option value="60_D1" selected>H1</option>
+<!--                <option value="60_W1">H1_W1</option>-->
+                </select>
+            </td>
+			<td id="latest" ></td>
+		</tr>
+    	</tbody>
+    </table>
+	<div style="margin:10px 0;"></div>
+	<table id="dg1" class="easyui-datagrid" title="SINGLE (PTRS)" style="width:1300px"
+			data-options="singleSelect:true,collapsible:true,jsonp:true,
+				method:'get',
+				remoteSort:false,
+				multiSort:true
+			">
+		<thead>
+			<tr>
+				<th data-options="field:'st',width:105,sortable:false" align="center">ST</th>
+				<th data-options="field:'name1',width:80,sortable:false,styler:cellStyler1" align="center">CUR1</th>
+				<th data-options="field:'stg1',width:45,sortable:false,styler:cellStyler1" align="center">STG1</th>
+				<th data-options="field:'type1',width:45,sortable:false,styler:cellStyler1" align="center">TP1</th>
+				<th data-options="field:'s11',width:45,sortable:false,styler:cellStyler1" align="center">S11</th>
+				<th data-options="field:'f11',width:45,sortable:false,styler:cellStyler1" align="center">F11</th>
+				<th data-options="field:'p11',width:45,sortable:false,styler:cellStyler1" align="center">P11</th>
+				<th data-options="field:'pm1',width:45,sortable:false,styler:cellStyler1" align="center">PM1</th>
+				<th data-options="field:'r1',width:45,sortable:false,styler:cellStyler1" align="center">R11</th>
+				<th data-options="field:'t1',width:45,sortable:false,styler:cellStyler1" align="center">T1</th>
+				<th data-options="field:'pr11',width:45,sortable:false,styler:cellStyler1" align="center">PR11</th>
+				<th data-options="field:'pmr1',width:45,sortable:false,styler:cellStyler1" align="center">PMR1</th>
+				<th data-options="field:'grp1',width:45,sortable:false,styler:cellStyler1" align="center">GRP1</th>
+				<th data-options="field:'name2',width:80,sortable:false,styler:cellStyler2" align="center">CUR2</th>
+				<th data-options="field:'stg2',width:45,sortable:false,styler:cellStyler2" align="center">STG2</th>
+				<th data-options="field:'type2',width:45,sortable:false,styler:cellStyler2" align="center">TP2</th>
+				<th data-options="field:'s21',width:45,sortable:false,styler:cellStyler2" align="center">S21</th>
+				<th data-options="field:'f21',width:45,sortable:false,styler:cellStyler2" align="center">F21</th>
+				<th data-options="field:'p21',width:45,sortable:false,styler:cellStyler2" align="center">P21</th>
+				<th data-options="field:'pm2',width:45,sortable:false,styler:cellStyler2" align="center">PM2</th>
+				<th data-options="field:'r2',width:45,sortable:false,styler:cellStyler2" align="center">R21</th>
+				<th data-options="field:'t2',width:45,sortable:false,styler:cellStyler2" align="center">T2</th>
+				<th data-options="field:'pr21',width:45,sortable:false,styler:cellStyler2" align="center">PR21</th>
+				<th data-options="field:'pmr2',width:45,sortable:false,styler:cellStyler2" align="center">PMR2</th>
+				<th data-options="field:'grp2',width:45,sortable:false,styler:cellStyler2" align="center">GRP2</th>
+			</tr>
+		</thead>
+	</table>
+	<div style="margin:10px 0;"></div>
+	<table id="dg2" class="easyui-datagrid" title="DAILY (PTRS)" style="width:1300px"
+			data-options="singleSelect:true,collapsible:true,jsonp:true,
+				method:'get',
+				remoteSort:false,
+				multiSort:true,
+				onSelect:selectDay,
+			">
+		<thead>
+			<tr>
+				<th data-options="field:'day',width:105,sortable:false" align="center">D</th>
+				<th data-options="field:'name1',width:65,sortable:false,styler:cellStyler3" align="center">CUR1</th>
+				<th data-options="field:'stg1',width:55,sortable:false,styler:cellStyler3" align="center">STG1</th>
+				<th data-options="field:'s11',width:55,sortable:false,styler:cellStyler3" align="center">S11</th>
+				<th data-options="field:'f11',width:55,sortable:false,styler:cellStyler3" align="center">F11</th>
+				<th data-options="field:'ps11',width:55,sortable:false,styler:cellStyler3" align="center">PS11</th>
+				<th data-options="field:'pms1',width:55,sortable:false,styler:cellStyler3" align="center">PMS1</th>
+				<th data-options="field:'rs1',width:55,sortable:false,styler:cellStyler3" align="center">RS11</th>
+				<th data-options="field:'prs11',width:55,sortable:false,styler:cellStyler3" align="center">PRS11</th>
+				<th data-options="field:'pmrs1',width:55,sortable:false,styler:cellStyler3" align="center">PMRS1</th>
+				<th data-options="field:'name2',width:65,sortable:false,styler:cellStyler4" align="center">CUR2</th>
+				<th data-options="field:'stg2',width:55,sortable:false,styler:cellStyler4" align="center">STG2</th>
+				<th data-options="field:'s21',width:55,sortable:false,styler:cellStyler4" align="center">S21</th>
+				<th data-options="field:'f21',width:55,sortable:false,styler:cellStyler4" align="center">F21</th>
+				<th data-options="field:'ps21',width:55,sortable:false,styler:cellStyler4" align="center">PS21</th>
+				<th data-options="field:'pms2',width:55,sortable:false,styler:cellStyler4" align="center">PMS2</th>
+				<th data-options="field:'rs2',width:55,sortable:false,styler:cellStyler4" align="center">RS21</th>
+				<th data-options="field:'prs21',width:55,sortable:false,styler:cellStyler4" align="center">PRS21</th>
+				<th data-options="field:'pmrs2',width:55,sortable:false,styler:cellStyler4" align="center">PMRS2</th>
+			</tr>
+		</thead>
+	</table>
+	<div style="margin:10px 0;"></div>
+	<table id="dg3" class="easyui-datagrid" title="WEEKLY (PTRS)" style="width:1300px"
+			data-options="singleSelect:true,collapsible:true,jsonp:true,
+				method:'get',
+				remoteSort:false,
+				multiSort:true,
+				onSelect:selectWeek,
+			">
+		<thead>
+			<tr>
+				<th data-options="field:'week',width:105,sortable:false" align="center">W(D-)</th>
+				<th data-options="field:'name1',width:65,sortable:false,styler:cellStyler3" align="center">CUR1</th>
+				<th data-options="field:'stg1',width:55,sortable:false,styler:cellStyler3" align="center">STG1</th>
+				<th data-options="field:'s11',width:55,sortable:false,styler:cellStyler3" align="center">S11</th>
+				<th data-options="field:'f11',width:55,sortable:false,styler:cellStyler3" align="center">F11</th>
+				<th data-options="field:'ps11',width:55,sortable:false,styler:cellStyler3" align="center">PS11</th>
+				<th data-options="field:'pms1',width:55,sortable:false,styler:cellStyler3" align="center">PMS1</th>
+				<th data-options="field:'rs1',width:55,sortable:false,styler:cellStyler3" align="center">RS11</th>
+				<th data-options="field:'prs11',width:55,sortable:false,styler:cellStyler3" align="center">PRS11</th>
+				<th data-options="field:'pmrs1',width:55,sortable:false,styler:cellStyler3" align="center">PMRS1</th>
+				<th data-options="field:'name2',width:65,sortable:false,styler:cellStyler4" align="center">CUR2</th>
+				<th data-options="field:'stg2',width:55,sortable:false,styler:cellStyler4" align="center">STG2</th>
+				<th data-options="field:'s21',width:55,sortable:false,styler:cellStyler4" align="center">S21</th>
+				<th data-options="field:'f21',width:55,sortable:false,styler:cellStyler4" align="center">F21</th>
+				<th data-options="field:'ps21',width:55,sortable:false,styler:cellStyler4" align="center">PS21</th>
+				<th data-options="field:'pms2',width:55,sortable:false,styler:cellStyler4" align="center">PMS2</th>
+				<th data-options="field:'rs2',width:55,sortable:false,styler:cellStyler4" align="center">RS21</th>
+				<th data-options="field:'prs21',width:55,sortable:false,styler:cellStyler4" align="center">PRS21</th>
+				<th data-options="field:'pmrs2',width:55,sortable:false,styler:cellStyler4" align="center">PMRS2</th>
+			</tr>
+		</thead>
+	</table>
+	<div style="margin:10px 0;"></div>
+	<table id="dg4" class="easyui-datagrid" title="MONTHLY (PTRS)" style="width:1300px"
+			data-options="singleSelect:true,collapsible:true,jsonp:true,
+				method:'get',
+				remoteSort:false,
+				multiSort:true,
+				onSelect:selectMonth,
+			">
+		<thead>
+			<tr>
+				<th data-options="field:'month',width:105,sortable:false" align="center">M</th>
+				<th data-options="field:'name1',width:65,sortable:false,styler:cellStyler3" align="center">CUR1</th>
+				<th data-options="field:'stg1',width:55,sortable:false,styler:cellStyler3" align="center">STG1</th>
+				<th data-options="field:'s11',width:55,sortable:false,styler:cellStyler3" align="center">S11</th>
+				<th data-options="field:'f11',width:55,sortable:false,styler:cellStyler3" align="center">F11</th>
+				<th data-options="field:'ps11',width:55,sortable:false,styler:cellStyler3" align="center">PS11</th>
+				<th data-options="field:'pms1',width:55,sortable:false,styler:cellStyler3" align="center">PMS1</th>
+				<th data-options="field:'rs1',width:55,sortable:false,styler:cellStyler3" align="center">RS11</th>
+				<th data-options="field:'prs11',width:55,sortable:false,styler:cellStyler3" align="center">PRS11</th>
+				<th data-options="field:'pmrs1',width:55,sortable:false,styler:cellStyler3" align="center">PMRS1</th>
+				<th data-options="field:'name2',width:65,sortable:false,styler:cellStyler4" align="center">CUR2</th>
+				<th data-options="field:'stg2',width:55,sortable:false,styler:cellStyler4" align="center">STG2</th>
+				<th data-options="field:'s21',width:55,sortable:false,styler:cellStyler4" align="center">S21</th>
+				<th data-options="field:'f21',width:55,sortable:false,styler:cellStyler4" align="center">F21</th>
+				<th data-options="field:'ps21',width:55,sortable:false,styler:cellStyler4" align="center">PS21</th>
+				<th data-options="field:'pms2',width:55,sortable:false,styler:cellStyler4" align="center">PMS2</th>
+				<th data-options="field:'rs2',width:55,sortable:false,styler:cellStyler4" align="center">RS21</th>
+				<th data-options="field:'prs21',width:55,sortable:false,styler:cellStyler4" align="center">PRS21</th>
+				<th data-options="field:'pmrs2',width:55,sortable:false,styler:cellStyler4" align="center">PMRS2</th>
+			</tr>
+		</thead>
+	</table>
+	<div style="margin:10px 0;"></div>
+	<table id="dg5" class="easyui-datagrid" title="YEARLY (PTRS)" style="width:1300px"
+			data-options="singleSelect:true,collapsible:true,jsonp:true,
+				method:'get',
+				remoteSort:false,
+				multiSort:true,
+				onSelect:selectYear,
+			">
+		<thead>
+			<tr>
+				<th data-options="field:'year',width:105,sortable:false" align="center">Y</th>
+				<th data-options="field:'name1',width:65,sortable:false,styler:cellStyler3" align="center">CUR1</th>
+				<th data-options="field:'stg1',width:55,sortable:false,styler:cellStyler3" align="center">STG1</th>
+				<th data-options="field:'s11',width:55,sortable:false,styler:cellStyler3" align="center">S11</th>
+				<th data-options="field:'f11',width:55,sortable:false,styler:cellStyler3" align="center">F11</th>
+				<th data-options="field:'ps11',width:55,sortable:false,styler:cellStyler3" align="center">PS11</th>
+				<th data-options="field:'pms1',width:55,sortable:false,styler:cellStyler3" align="center">PMS1</th>
+				<th data-options="field:'rs1',width:55,sortable:false,styler:cellStyler3" align="center">RS11</th>
+				<th data-options="field:'prs11',width:55,sortable:false,styler:cellStyler3" align="center">PRS11</th>
+				<th data-options="field:'pmrs1',width:55,sortable:false,styler:cellStyler3" align="center">PMRS1</th>
+				<th data-options="field:'name2',width:65,sortable:false,styler:cellStyler4" align="center">CUR2</th>
+				<th data-options="field:'stg2',width:55,sortable:false,styler:cellStyler4" align="center">STG2</th>
+				<th data-options="field:'s21',width:55,sortable:false,styler:cellStyler4" align="center">S21</th>
+				<th data-options="field:'f21',width:55,sortable:false,styler:cellStyler4" align="center">F21</th>
+				<th data-options="field:'ps21',width:55,sortable:false,styler:cellStyler4" align="center">PS21</th>
+				<th data-options="field:'pms2',width:55,sortable:false,styler:cellStyler4" align="center">PMS2</th>
+				<th data-options="field:'rs2',width:55,sortable:false,styler:cellStyler4" align="center">RS21</th>
+				<th data-options="field:'prs21',width:55,sortable:false,styler:cellStyler4" align="center">PRS21</th>
+				<th data-options="field:'pmrs2',width:55,sortable:false,styler:cellStyler4" align="center">PMRS2</th>
+			</tr>
+		</thead>
+	</table>
+    <script type="text/javascript">
+    Date.prototype.getWeek = function() {
+        var onejan = new Date(this.getFullYear(), 0, 1);
+        return Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7) - 1;
+    }
+    var today = new Date();
+	var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+	//console.log(mm);
+	var yyyy = today.getFullYear();
+	var ww = String(today.getWeek() + 1).padStart(2, '0');
+	//console.log(ww);
+	var dd = String(today.getDate()).padStart(2, '0'); 	//
+	//console.log(dd);
+	//document.write(today);
+	var s00 = 'http://localhost:5002/latest6?where={"name":"C1"}&max_results=1';
+	var s11 = 'http://localhost:5002/ptrs6_cur_11?aggregate={"$cur1":"C1","$cur2":"C2","$stg":"S1","$year":"Y1","$wk":"^W1","$day":"D1","$pd":PD}&max_results=300'
+	var s12 = 'http://localhost:5002/ptrs6_stg_11?aggregate={"$stg1":"S1","$stg2":"S2","$cur":"C1","$year":"Y1","$wk":"^W1","$day":"D1","$pd":PD}&max_results=300'
+	var s21 = 'http://localhost:5002/ptrs6_cur_22?aggregate={"$cur1":"C1","$cur2":"C2","$stg":"S1","$year":"Y1","$wk":"^W1","$pd":PD}&max_results=10'
+	var s22 = 'http://localhost:5002/ptrs6_stg_22?aggregate={"$stg1":"S1","$stg2":"S2","$cur":"C1","$year":"Y1","$wk":"^W1","$pd":PD}&max_results=10'
+	var s31 = 'http://localhost:5002/ptrs6_cur_33?aggregate={"$cur1":"C1","$cur2":"C2","$stg":"S1","$year":"Y1","$month":"M1","$pd":PD}&max_results=10'
+	var s32 = 'http://localhost:5002/ptrs6_stg_33?aggregate={"$stg1":"S1","$stg2":"S2","$cur":"C1","$year":"Y1","$month":"M1","$pd":PD}&max_results=10'
+	var s41 = 'http://localhost:5002/ptrs6_cur_44?aggregate={"$cur1":"C1","$cur2":"C2","$stg":"S1","$year":"Y1","$pd":PD}&max_results=12'
+	var s42 = 'http://localhost:5002/ptrs6_stg_44?aggregate={"$stg1":"S1","$stg2":"S2","$cur":"C1","$year":"Y1","$pd":PD}&max_results=12'
+	var s51 = 'http://localhost:5002/ptrs6_cur_5?aggregate={"$cur1":"C1","$cur2":"C2","$stg":"S1","$pd":PD}&max_results=50'
+	var s52 = 'http://localhost:5002/ptrs6_stg_5?aggregate={"$stg1":"S1","$stg2":"S2","$cur":"C1","$pd":PD}&max_results=50'
+    function cellStyler1(value,row,index){
+<!--        if (row.s12>0) {-->
+<!--            if (row.s13>0) {-->
+<!--                return 'background-color:LimeGreen;';-->
+<!--            }-->
+        if (row.p11>0) {
+            return 'background-color:DarkSeaGreen;';
+<!--		} else-->
+<!--        if (row.s14>0) {-->
+<!--            if (row.s11>0) {-->
+<!--                return 'background-color:LimeGreen;';-->
+<!--            }-->
+<!--            return 'background-color:DarkSeaGreen;';-->
+		}
+	};
+    function cellStyler2(value,row,index){
+<!--        if (row.s22>0) {-->
+<!--            if (row.s23>0) {-->
+<!--                return 'background-color:LimeGreen;';-->
+<!--            }-->
+        if (row.p21>0) {
+            return 'background-color:DarkSeaGreen;';
+<!--		} else-->
+<!--        if (row.s24>0) {-->
+<!--            if (row.s21>0) {-->
+<!--                return 'background-color:LimeGreen;';-->
+<!--            }-->
+<!--            return 'background-color:DarkSeaGreen;';-->
+		}
+	};
+    function cellStyler3(value,row,index){
+        //if (row.s12>row.f12) {
+<!--		if ((row.prs13+row.prs14)>2) {-->
+<!--            if ((row.prs13+row.prs14)>3) {-->
+<!--                return 'background-color:LimeGreen;';-->
+<!--            }-->
+		if (row.ps11>row.rs1) {
+            return 'background-color:DarkSeaGreen;';
+<!--		} else-->
+<!--		if ((row.prs11+row.prs14)>2) {-->
+<!--            if ((row.prs11+row.prs14)>3) {-->
+<!--                return 'background-color:LimeGreen;';-->
+<!--            }-->
+<!--            return 'background-color:DarkSeaGreen;';-->
+        }
+	};
+    function cellStyler4(value,row,index){
+        //if (row.s22>row.f22) {
+<!--		if ((row.prs23+row.prs24)>2) {-->
+<!--            if ((row.prs23+row.prs24)>3) {-->
+<!--                return 'background-color:LimeGreen;';-->
+<!--            }-->
+		if (row.ps21>row.rs2) {
+            return 'background-color:DarkSeaGreen;';
+<!--		} else-->
+<!--		if ((row.prs21+row.prs24)>2) {-->
+<!--            if ((row.prs21+row.prs24)>3) {-->
+<!--                return 'background-color:LimeGreen;';-->
+<!--            }-->
+<!--            return 'background-color:DarkSeaGreen;';-->
+        }
+	};
+    function selectDay(rowIndex,rowData){
+		//console.log(rowData.year + '-' + rowData.week + '-' + rowData.day);
+		var y = rowData.year;
+		var w = rowData.week;
+		var d = rowData.day;
+		//chg_data1(y, w, d);
+		var reg = /^(\d{2})\((\d{2})-\)/;
+		if (reg.test(w)) {
+		  	//console.log(RegExp.$1);
+		  	//console.log(RegExp.$2);
+			w = RegExp.$1;
+			chg_data1(y, w, d);
+		}
+	};
+    function selectWeek(rowIndex,rowData){
+		//console.log(rowData.year + '-' + rowData.week);
+		var y = rowData.year;
+		var w = rowData.week;
+		//chg_data2(y, w);
+		var reg = /^(\d{2})\((\d{2})-\)/;
+		if (reg.test(w)) {
+		  	//console.log(RegExp.$1);
+		  	//console.log(RegExp.$2);
+			w = RegExp.$1;
+			chg_data2(y, w);
+		}
+	};
+    function selectMonth(rowIndex,rowData){
+		//console.log(rowData.year + '-' + rowData.month);
+		var y = rowData.year;
+		var m = rowData.month;
+		chg_data3(y, m);
+	};
+    function selectYear(rowIndex,rowData){
+		//console.log(rowData.year);
+		var y = rowData.year;
+		chg_data4(y);
+	};
+    function show_data0(data) {
+		//console.log(data);
+	    var rows = data.rows;
+	    if (rows.length == 0) return;
+	    //if (!rows) return;
+	    k = rows[0].key;
+        $(latest).html(k);
+	};
+	function proc_data(data) {
+	    //console.log(data);
+	    var c = $('#cur1').val();
+	    var c2 = $('#cur2').val();
+	    var t = $('#stg1').val();
+	    var t2 = $('#stg2').val();
+	    var ct1 = c + t;
+	    var ct2 = c2 + t2;
+	    var values = [];
+	    var rows = data.rows;
+	    if (!rows) return;
+        for ( var i = 0; i <rows.length; i++) {
+            var v1 = {
+                'st' : rows[i]._id.start,
+            };
+            items = rows[i].items;
+            var _ct1 = null, _ct2 = null;
+            if (items.length>0) {
+                _ct1 = items[0].c + items[0].stg;
+                items[0].type = (items[0].type == 1 ? 'B' : 'S');
+            }
+            if (items.length>1) {
+                _ct2 = items[1].c + items[1].stg;
+                items[1].type = (items[1].type == 1 ? 'B' : 'S');
+            }
+            var v2 = {};
+            if (_ct1 && ct1 == _ct1) {
+                v2 = {
+                    'name1' : items[0].c,
+                    'stg1' : items[0].stg,
+                    'type1' : items[0].type,
+                    's11' : items[0].s,
+                    'f11' : items[0].f,
+                    'p11' : items[0].p,
+                    'pm1' : items[0].p_m,
+                    'r1' : items[0].r,
+                    't1' : items[0].t,
+                    'pr11' : Math.round(items[0].p/items[0].r*10+0.5)/10,
+                    'pr1' : Math.round(items[0].p/items[0].r*10+0.5)/10,
+                    'pmr1' : Math.round(items[0].p_m/items[0].r*10+0.5)/10,
+                    'grp1' : items[0].grp,
+                };
+            }
+            if (_ct2 && ct1 == _ct2) {
+                v2 = {
+                    'name1' : items[1].c,
+                    'stg1' : items[1].stg,
+                    'type1' : items[1].type,
+                    's11' : items[1].s,
+                    'f11' : items[1].f,
+                    'p11' : items[1].p,
+                    'pm1' : items[1].p_m,
+                    'r1' : items[1].r,
+                    't1' : items[1].t,
+                    'pr11' : Math.round(items[1].p/items[1].r*10+0.5)/10,
+                    'pr1' : Math.round(items[1].p/items[1].r*10+0.5)/10,
+                    'pmr1' : Math.round(items[1].p_m/items[1].r*10+0.5)/10,
+                    'grp1' : items[1].grp,
+                };
+            }
+            var v3 = {};
+            if (_ct1 && ct2 == _ct1) {
+                v3 = {
+                    'name2' : items[0].c,
+                    'stg2' : items[0].stg,
+                    'type2' : items[0].type,
+                    's21' : items[0].s,
+                    'f21' : items[0].f,
+                    'p21' : items[0].p,
+                    'pm2' : items[0].p_m,
+                    'r2' : items[0].r,
+                    't2' : items[0].t,
+                    'pr21' : Math.round(items[0].p/items[0].r*10+0.5)/10,
+                    'pr2' : Math.round(items[0].p/items[0].r*10+0.5)/10,
+                    'pmr2' : Math.round(items[0].p_m/items[0].r*10+0.5)/10,
+                    'grp2' : items[0].grp,
+                };
+            }
+            if (_ct2 && ct2 == _ct2) {
+                v3 = {
+                    'name2' : items[1].c,
+                    'stg2' : items[1].stg,
+                    'type2' : items[1].type,
+                    's21' : items[1].s,
+                    'f21' : items[1].f,
+                    'p21' : items[1].p,
+                    'pm2' : items[1].p_m,
+                    'r2' : items[1].r,
+                    't2' : items[1].t,
+                    'pr21' : Math.round(items[1].p/items[1].r*10+0.5)/10,
+                    'pr2' : Math.round(items[1].p/items[1].r*10+0.5)/10,
+                    'pmr2' : Math.round(items[1].p_m/items[1].r*10+0.5)/10,
+                    'grp2' : items[1].grp,
+                };
+            }
+            var v = Object.assign({}, v1, v2, v3);
+            values.push(v);
+        }
+        return values;
+	};
+	function proc_data2(data) {
+	    //console.log(data);
+	    var c = $('#cur1').val();
+	    var c2 = $('#cur2').val();
+	    var t = $('#stg1').val();
+	    var t2 = $('#stg2').val();
+	    var ct1 = c + t;
+	    var ct2 = c2 + t2;
+	    var values = [];
+	    var rows = data.rows;
+	    if (!rows) return;
+        for ( var i = 0; i <rows.length; i++) {
+            var v1 = {
+                'year' : rows[i]._id.year,
+                'week' : rows[i]._id.week,
+                'day' : rows[i]._id.day,
+            };
+            items = rows[i].items;
+            var _ct1 = null, _ct2 = null;
+            if (items.length>0) {
+                _ct1 = items[0].c + items[0].stg;
+            }
+            if (items.length>1) {
+                _ct2 = items[1].c + items[1].stg;
+            }
+            var v2 = {};
+            if (_ct1 && ct1 == _ct1) {
+                v2 = {
+                    'name1' : items[0].c,
+                    'stg1' : items[0].stg,
+                    's11' : items[0].s,
+                    'f11' : items[0].f,
+                    'p11' : items[0].p,
+                    'pm1' : items[0].p_m,
+                    'pms1' : items[0].p_ms,
+                    'ps11' : items[0].p_s,
+                    'rs1' : items[0].r_s,
+                    'prs11' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'prs1' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'pmrs1' : Math.round(items[0].p_ms/items[0].r_s*10+0.5)/10,
+                    'r1' : items[0].r,
+                    't1' : items[0].t,
+                };
+            }
+            if (_ct2 && ct1 == _ct2) {
+                v2 = {
+                    'name1' : items[1].c,
+                    'stg1' : items[1].stg,
+                    's11' : items[1].s,
+                    'f11' : items[1].f,
+                    'p11' : items[1].p,
+                    'pm1' : items[1].p_m,
+                    'pms1' : items[1].p_ms,
+                    'ps11' : items[1].p_s,
+                    'rs1' : items[1].r_s,
+                    'prs11' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'prs1' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'pmrs1' : Math.round(items[1].p_ms/items[1].r_s*10+0.5)/10,
+                    'r1' : items[1].r,
+                    't1' : items[1].t,
+                };
+            }
+            var v3 = {};
+            if (_ct1 && ct2 == _ct1) {
+                v3 = {
+                    'name2' : items[0].c,
+                    'stg2' : items[0].stg,
+                    's21' : items[0].s,
+                    'f21' : items[0].f,
+                    'p21' : items[0].p,
+                    'pm2' : items[0].p_m,
+                    'pms2' : items[0].p_ms,
+                    'ps21' : items[0].p_s,
+                    'rs2' : items[0].r_s,
+                    'prs21' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'prs2' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'pmrs2' : Math.round(items[0].p_ms/items[0].r_s*10+0.5)/10,
+                    'r2' : items[0].r,
+                    't2' : items[0].t,
+                };
+            }
+            if (_ct2 && ct2 == _ct2) {
+                v3 = {
+                    'name2' : items[1].c,
+                    'stg2' : items[1].stg,
+                    's21' : items[1].s,
+                    'f21' : items[1].f,
+                    'p21' : items[1].p,
+                    'pm2' : items[1].p_m,
+                    'pms2' : items[1].p_ms,
+                    'ps21' : items[1].p_s,
+                    'rs2' : items[1].r_s,
+                    'prs21' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'prs2' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'pmrs2' : Math.round(items[1].p_ms/items[1].r_s*10+0.5)/10,
+                    'r2' : items[1].r,
+                    't2' : items[1].t,
+                };
+            }
+            var v = Object.assign({}, v1, v2, v3);
+            values.push(v);
+        }
+        return values;
+	};
+	function proc_data3(data) {
+	    //console.log(data);
+	    var c = $('#cur1').val();
+	    var c2 = $('#cur2').val();
+	    var t = $('#stg1').val();
+	    var t2 = $('#stg2').val();
+	    var ct1 = c + t;
+	    var ct2 = c2 + t2;
+	    var values = [];
+	    var rows = data.rows;
+	    if (!rows) return;
+        for ( var i = 0; i <rows.length; i++) {
+            var v1 = {
+                'year' : rows[i]._id.year,
+                'week' : rows[i]._id.week,
+            };
+            items = rows[i].items;
+            var _ct1 = null, _ct2 = null;
+            if (items.length>0) {
+                _ct1 = items[0].c + items[0].stg;
+            }
+            if (items.length>1) {
+                _ct2 = items[1].c + items[1].stg;
+            }
+            var v2 = {};
+            if (_ct1 && ct1 == _ct1) {
+                v2 = {
+                    'name1' : items[0].c,
+                    'stg1' : items[0].stg,
+                    's11' : items[0].s,
+                    'f11' : items[0].f,
+                    'p11' : items[0].p,
+                    'pm1' : items[0].p_m,
+                    'pms1' : items[0].p_ms,
+                    'ps11' : items[0].p_s,
+                    'rs1' : items[0].r_s,
+                    'prs11' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'prs1' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'pmrs1' : Math.round(items[0].p_ms/items[0].r_s*10+0.5)/10,
+                    'r1' : items[0].r,
+                    't1' : items[0].t,
+                };
+            }
+            if (_ct2 && ct1 == _ct2) {
+                v2 = {
+                    'name1' : items[1].c,
+                    'stg1' : items[1].stg,
+                    's11' : items[1].s,
+                    'f11' : items[1].f,
+                    'p11' : items[1].p,
+                    'pm1' : items[1].p_m,
+                    'pms1' : items[1].p_ms,
+                    'ps11' : items[1].p_s,
+                    'rs1' : items[1].r_s,
+                    'prs11' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'prs1' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'r1' : items[1].r,
+                    't1' : items[1].t,
+                };
+            }
+            var v3 = {};
+            if (_ct1 && ct2 == _ct1) {
+                v3 = {
+                    'name2' : items[0].c,
+                    'stg2' : items[0].stg,
+                    's21' : items[0].s,
+                    'f21' : items[0].f,
+                    'p21' : items[0].p,
+                    'pm2' : items[0].p_m,
+                    'pms2' : items[0].p_ms,
+                    'ps21' : items[0].p_s,
+                    'rs2' : items[0].r_s,
+                    'prs21' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'prs2' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'pmrs2' : Math.round(items[0].p_ms/items[0].r_s*10+0.5)/10,
+                    'r2' : items[0].r,
+                    't2' : items[0].t,
+                };
+            }
+            if (_ct2 && ct2 == _ct2) {
+                v3 = {
+                    'name2' : items[1].c,
+                    'stg2' : items[1].stg,
+                    's21' : items[1].s,
+                    'f21' : items[1].f,
+                    'p21' : items[1].p,
+                    'pm2' : items[1].p_m,
+                    'pms2' : items[1].p_ms,
+                    'ps2' : items[1].p_s,
+                    'ps21' : items[1].p_s,
+                    'rs2' : items[1].r_s,
+                    'prs21' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'prs2' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'pmrs2' : Math.round(items[1].p_ms/items[1].r_s*10+0.5)/10,
+                    'r2' : items[1].r,
+                    't2' : items[1].t,
+                };
+            }
+            var v = Object.assign({}, v1, v2, v3);
+            values.push(v);
+        }
+        return values;
+	};
+	function proc_data4(data) {
+	    //console.log(data);
+	    var c = $('#cur1').val();
+	    var c2 = $('#cur2').val();
+	    var t = $('#stg1').val();
+	    var t2 = $('#stg2').val();
+	    var ct1 = c + t;
+	    var ct2 = c2 + t2;
+	    var values = [];
+	    var rows = data.rows;
+	    if (!rows) return;
+        for ( var i = 0; i <rows.length; i++) {
+            var v1 = {
+                'year' : rows[i]._id.year,
+                'month' : rows[i]._id.month,
+            };
+            items = rows[i].items;
+            var _ct1 = null, _ct2 = null;
+            if (items.length>0) {
+                _ct1 = items[0].c + items[0].stg;
+            }
+            if (items.length>1) {
+                _ct2 = items[1].c + items[1].stg;
+            }
+            var v2 = {};
+            if (_ct1 && ct1 == _ct1) {
+                v2 = {
+                    'name1' : items[0].c,
+                    'stg1' : items[0].stg,
+                    's11' : items[0].s,
+                    'f11' : items[0].f,
+                    'p11' : items[0].p,
+                    'pm1' : items[0].p_m,
+                    'pms1' : items[0].p_ms,
+                    'ps11' : items[0].p_s,
+                    'rs1' : items[0].r_s,
+                    'prs11' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'prs1' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'pmrs1' : Math.round(items[0].p_ms/items[0].r_s*10+0.5)/10,
+                    'r1' : items[0].r,
+                    't1' : items[0].t,
+                };
+            }
+            if (_ct2 && ct1 == _ct2) {
+                v2 = {
+                    'name1' : items[1].c,
+                    'stg1' : items[1].stg,
+                    's11' : items[1].s,
+                    'f11' : items[1].f,
+                    'p11' : items[1].p,
+                    'pm1' : items[1].p_m,
+                    'pms1' : items[1].p_ms,
+                    'ps11' : items[1].p_s,
+                    'rs1' : items[1].r_s,
+                    'prs11' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'prs1' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'pmrs1' : Math.round(items[1].p_ms/items[1].r_s*10+0.5)/10,
+                    'r1' : items[1].r,
+                    't1' : items[1].t,
+                };
+            }
+            var v3 = {};
+            if (_ct1 && ct2 == _ct1) {
+                v3 = {
+                    'name2' : items[0].c,
+                    'stg2' : items[0].stg,
+                    's21' : items[0].s,
+                    'f21' : items[0].f,
+                    'p21' : items[0].p,
+                    'pm2' : items[0].p_m,
+                    'pms2' : items[0].p_ms,
+                    'ps21' : items[0].p_s,
+                    'rs2' : items[0].r_s,
+                    'prs21' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'prs2' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'pmrs2' : Math.round(items[0].p_ms/items[0].r_s*10+0.5)/10,
+                    'r2' : items[0].r,
+                    't2' : items[0].t,
+                };
+            }
+            if (_ct2 && ct2 == _ct2) {
+                v3 = {
+                    'name2' : items[1].c,
+                    'stg2' : items[1].stg,
+                    's21' : items[1].s,
+                    'f21' : items[1].f,
+                    'p21' : items[1].p,
+                    'pm2' : items[1].p_m,
+                    'pms2' : items[1].p_ms,
+                    'ps21' : items[1].p_s,
+                    'rs2' : items[1].r_s,
+                    'prs21' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'prs2' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'pmrs2' : Math.round(items[1].p_ms/items[1].r_s*10+0.5)/10,
+                    'r2' : items[1].r,
+                    't2' : items[1].t,
+                };
+            }
+            var v = Object.assign({}, v1, v2, v3);
+            values.push(v);
+        }
+        return values;
+	};
+	function proc_data5(data) {
+	    //console.log(data);
+	    var c = $('#cur1').val();
+	    var c2 = $('#cur2').val();
+	    var t = $('#stg1').val();
+	    var t2 = $('#stg2').val();
+	    var ct1 = c + t;
+	    var ct2 = c2 + t2;
+	    var values = [];
+	    var rows = data.rows;
+	    if (!rows) return;
+        for ( var i = 0; i <rows.length; i++) {
+            var v1 = {
+                'year' : rows[i]._id.year,
+            };
+            items = rows[i].items;
+            var _ct1 = null, _ct2 = null;
+            if (items.length>0) {
+                _ct1 = items[0].c + items[0].stg;
+            }
+            if (items.length>1) {
+                _ct2 = items[1].c + items[1].stg;
+            }
+            var v2 = {};
+            if (_ct1 && ct1 == _ct1) {
+                v2 = {
+                    'name1' : items[0].c,
+                    'stg1' : items[0].stg,
+                    's11' : items[0].s,
+                    'f11' : items[0].f,
+                    'p11' : items[0].p,
+                    'pm1' : items[0].p_m,
+                    'pms1' : items[0].p_ms,
+                    'ps11' : items[0].p_s,
+                    'rs1' : items[0].r_s,
+                    'prs11' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'prs1' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'pmrs1' : Math.round(items[0].p_ms/items[0].r_s*10+0.5)/10,
+                    'r1' : items[0].r,
+                    't1' : items[0].t,
+                };
+            }
+            if (_ct2 && ct1 == _ct2) {
+                v2 = {
+                    'name1' : items[1].c,
+                    'stg1' : items[1].stg,
+                    's11' : items[1].s,
+                    'f11' : items[1].f,
+                    'p11' : items[1].p,
+                    'pm1' : items[1].p_m,
+                    'pms1' : items[1].p_ms,
+                    'ps11' : items[1].p_s,
+                    'rs1' : items[1].r_s,
+                    'prs11' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'prs1' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'pmrs1' : Math.round(items[1].p_ms/items[1].r_s*10+0.5)/10,
+                    'r1' : items[1].r,
+                    't1' : items[1].t,
+                };
+            }
+            var v3 = {};
+            if (_ct1 && ct2 == _ct1) {
+                v3 = {
+                    'name2' : items[0].c,
+                    'stg2' : items[0].stg,
+                    's21' : items[0].s,
+                    'f21' : items[0].f,
+                    'p21' : items[0].p,
+                    'pm2' : items[0].p_m,
+                    'pms2' : items[0].p_ms,
+                    'ps21' : items[0].p_s,
+                    'rs2' : items[0].r_s,
+                    'prs21' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'prs2' : Math.round(items[0].p_s/items[0].r_s*10+0.5)/10,
+                    'pmrs2' : Math.round(items[0].p_ms/items[0].r_s*10+0.5)/10,
+                    'r2' : items[0].r,
+                    't2' : items[0].t,
+                };
+            }
+            if (_ct2 && ct2 == _ct2) {
+                v3 = {
+                    'name2' : items[1].c,
+                    'stg2' : items[1].stg,
+                    's21' : items[1].s,
+                    'f21' : items[1].f,
+                    'p21' : items[1].p,
+                    'pm2' : items[1].p_m,
+                    'pms2' : items[1].p_ms,
+                    'ps21' : items[1].p_s,
+                    'rs2' : items[1].r_s,
+                    'prs21' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'prs2' : Math.round(items[1].p_s/items[1].r_s*10+0.5)/10,
+                    'pmrs2' : Math.round(items[1].p_ms/items[1].r_s*10+0.5)/10,
+                    'r2' : items[1].r,
+                    't2' : items[1].t,
+                };
+            }
+            var v = Object.assign({}, v1, v2, v3);
+            values.push(v);
+        }
+        return values;
+	};
+	function show_data(data) {
+		var values = proc_data(data);
+		if (values) {
+        	$('#dg1').datagrid('loadData', values);
+       	}
+	};
+	function show_data2(data) {
+		var values = proc_data2(data);
+		if (values) {
+        	$('#dg2').datagrid('loadData', values);
+       	}
+	};
+	function show_data3(data) {
+		var values = proc_data3(data);
+		if (values) {
+        	$('#dg3').datagrid('loadData', values);
+       	}
+	};
+	function show_data4(data) {
+		var values = proc_data4(data);
+		if (values) {
+        	$('#dg4').datagrid('loadData', values);
+       	}
+	};
+	function show_data5(data) {
+		var values = proc_data5(data);
+		if (values) {
+        	$('#dg5').datagrid('loadData', values);
+       	}
+	};
+	function get_data(url, fun) {
+		$.ajax({
+			url: url,
+			type: 'GET',
+			dataType: "jsonp",
+			jsonpCallback: fun,
+			success: function (data) {
+				//console.log('call show_data');
+			},
+		});
+	};
+	function chg_data() {
+        var c = $('#cur1').val();
+        var c2 = $('#cur2').val();
+        var t = $('#stg1').val();
+        var t2 = $('#stg2').val();
+        var pdma = $('#pdma').val();
+        var pd = pdma.split('_')[0];
+        var ma = pdma.split('_')[1];
+        var s1 = s11;
+        var s2 = s21;
+        var s3 = s31;
+        var s4 = s41;
+        var s5 = s51;
+		if (c == c2 && t != t2) {
+			s1 = s12;
+			s2 = s22;
+			s3 = s32;
+			s4 = s42;
+			s5 = s52;
+		}
+		s1 = s1.replace(/C1/, c);
+		s1 = s1.replace(/C2/, c2);
+		s1 = s1.replace(/S1/, t);
+		s1 = s1.replace(/S2/, t2);
+		s1 = s1.replace(/Y1/, yyyy);
+		s1 = s1.replace(/W1/, ww);
+		s1 = s1.replace(/D1/, dd);
+		s1 = s1.replace(/MA/, ma);
+		s1 = s2.replace(/PD/, pd);
+		s2 = s2.replace(/C1/, c);
+		s2 = s2.replace(/C2/, c2);
+		s2 = s2.replace(/S1/, t);
+		s2 = s2.replace(/S2/, t2);
+		s2 = s2.replace(/Y1/, yyyy);
+		s2 = s2.replace(/W1/, ww);
+		s2 = s2.replace(/MA/, ma);
+		s2 = s2.replace(/PD/, pd);
+		s3 = s3.replace(/C1/, c);
+		s3 = s3.replace(/C2/, c2);
+		s3 = s3.replace(/S1/, t);
+		s3 = s3.replace(/S2/, t2);
+		s3 = s3.replace(/Y1/, yyyy);
+		s3 = s3.replace(/M1/, mm);
+		s3 = s3.replace(/MA/, ma);
+		s3 = s3.replace(/PD/, pd);
+		s4 = s4.replace(/C1/, c);
+		s4 = s4.replace(/C2/, c2);
+		s4 = s4.replace(/S1/, t);
+		s4 = s4.replace(/S2/, t2);
+		s4 = s4.replace(/Y1/, yyyy);
+		s4 = s4.replace(/MA/, ma);
+		s4 = s4.replace(/PD/, pd);
+		s5 = s5.replace(/C1/, c);
+		s5 = s5.replace(/C2/, c2);
+		s5 = s5.replace(/S1/, t);
+		s5 = s5.replace(/S2/, t2);
+		s5 = s5.replace(/MA/, ma);
+		s5 = s5.replace(/PD/, pd);
+		console.log(s1);
+		get_data(s1, "show_data");
+		console.log(s2);
+		get_data(s2, "show_data2");
+		console.log(s3);
+		get_data(s3, "show_data3");
+		console.log(s4);
+		get_data(s4, "show_data4");
+		console.log(s5);
+		get_data(s5, "show_data5");
+	};
+	function chg_data1(y, w, d) {
+        var c = $('#cur1').val();
+        var c2 = $('#cur2').val();
+        var t = $('#stg1').val();
+        var t2 = $('#stg2').val();
+        var pdma = $('#pdma').val();
+        var pd = pdma.split('_')[0];
+        var ma = pdma.split('_')[1];
+        var s1 = s11;
+		if (c == c2 && t != t2) {
+			s1 = s12;
+		}
+		s1 = s1.replace(/C1/, c);
+		s1 = s1.replace(/C2/, c2);
+		s1 = s1.replace(/S1/, t);
+		s1 = s1.replace(/S2/, t2);
+		s1 = s1.replace(/MA/, ma);
+		s1 = s1.replace(/PD/, pd);
+		if (y && w && d) {
+			s1 = s1.replace(/Y1/, y);
+			s1 = s1.replace(/W1/, w);
+			s1 = s1.replace(/D1/, d);
+		} else {
+			s1 = s1.replace(/Y1/, yyyy);
+			s1 = s1.replace(/W1/, ww);
+			s1 = s1.replace(/D1/, dd);
+		}
+		console.log(s1);
+		get_data(s1, "show_data");
+	};
+	function chg_data2(y, w) {
+        var c = $('#cur1').val();
+        var c2 = $('#cur2').val();
+        var t = $('#stg1').val();
+        var t2 = $('#stg2').val();
+        var pdma = $('#pdma').val();
+        var pd = pdma.split('_')[0];
+        var ma = pdma.split('_')[1];
+        var s2 = s21;
+		if (c == c2 && t != t2) {
+			s2 = s22;
+		}
+		s2 = s2.replace(/C1/, c);
+		s2 = s2.replace(/C2/, c2);
+		s2 = s2.replace(/S1/, t);
+		s2 = s2.replace(/S2/, t2);
+		s2 = s2.replace(/MA/, ma);
+		s2 = s2.replace(/PD/, pd);
+		if (y && w) {
+			s2 = s2.replace(/Y1/, y);
+			s2 = s2.replace(/W1/, w);
+		} else {
+			s2 = s2.replace(/Y1/, yyyy);
+			s2 = s2.replace(/W1/, ww);
+		}
+		console.log(s2);
+		get_data(s2, "show_data2");
+	};
+	function chg_data3(y, m) {
+        var c = $('#cur1').val();
+        var c2 = $('#cur2').val();
+        var t = $('#stg1').val();
+        var t2 = $('#stg2').val();
+        var pdma = $('#pdma').val();
+        var pd = pdma.split('_')[0];
+        var ma = pdma.split('_')[1];
+        var s3 = s31;
+		if (c == c2 && t != t2) {
+			s3 = s32;
+		}
+		s3 = s3.replace(/C1/, c);
+		s3 = s3.replace(/C2/, c2);
+		s3 = s3.replace(/S1/, t);
+		s3 = s3.replace(/S2/, t2);
+		s3 = s3.replace(/MA/, ma);
+		s3 = s3.replace(/PD/, pd);
+		if (y && m) {
+			s3 = s3.replace(/Y1/, y);
+			s3 = s3.replace(/M1/, m);
+		} else {
+			s3 = s3.replace(/Y1/, yyyy);
+			s3 = s3.replace(/M1/, mm);
+		}
+		console.log(s3);
+		get_data(s3, "show_data3");
+	};
+	function chg_data4(y) {
+        var c = $('#cur1').val();
+        var c2 = $('#cur2').val();
+        var t = $('#stg1').val();
+        var t2 = $('#stg2').val();
+        var pdma = $('#pdma').val();
+        var pd = pdma.split('_')[0];
+        var ma = pdma.split('_')[1];
+        var s4 = s41;
+		if (c == c2 && t != t2) {
+			s4 = s42;
+		}
+		s4 = s4.replace(/C1/, c);
+		s4 = s4.replace(/C2/, c2);
+		s4 = s4.replace(/S1/, t);
+		s4 = s4.replace(/S2/, t2);
+		s4 = s4.replace(/MA/, ma);
+		s4 = s4.replace(/PD/, pd);
+		if (y) {
+			s4 = s4.replace(/Y1/, y);
+		} else {
+			s4 = s4.replace(/Y1/, yyyy);
+		}
+		console.log(s4);
+		get_data(s4, "show_data4");
+	};
+	function chg_cur() {
+        var c = $('#cur1').val();
+        var c2 = $('#cur2').val();
+        var t = $('#stg1').val();
+        var t2 = $('#stg2').val();
+        var pdma = $('#pdma').val();
+        var pd = pdma.split('_')[0];
+        var ma = pdma.split('_')[1];
+        var s0 = s00.replace(/C1/, c);
+        s0 = s0.replace(/MA/, ma);
+		s0 = s0.replace(/PD/, pd);
+        //console.log(s0);
+		get_data(s0, "show_data0");
+
+		if (c != c2 && t != t2) {
+			$('#stg2').val(t);
+			t2 = t;
+		}
+		chg_data();
+	};
+	function chg_stg() {
+        var c = $('#cur1').val();
+        var c2 = $('#cur2').val();
+        var t = $('#stg1').val();
+        var t2 = $('#stg2').val();
+		if (t != t2 && c != c2) {
+			$('#cur2').val(c);
+			c2 = c;
+		}
+		chg_data();
+	};
+	function chg_ma() {
+        var c = $('#cur1').val();
+        var s0 = s00.replace(/C1/, c);
+        var pdma = $('#pdma').val();
+        var pd = pdma.split('_')[0];
+        var ma = pdma.split('_')[1];
+        s0 = s0.replace(/MA/, ma);
+		s0 = s0.replace(/PD/, pd);
+        //console.log(s0);
+		get_data(s0, "show_data0");
+		chg_data();
+	};
+    $(document).ready( function () {
+		$('#dg1').datagrid({
+			pagination:false,
+			fitColumns:false,
+			loadMsg: "loading data, please wait...",
+		});
+		$('#dg2').datagrid({
+			pagination:false,
+			fitColumns:false,
+			loadMsg: "loading data, please wait...",
+		});
+		$('#dg3').datagrid({
+			pagination:false,
+			fitColumns:false,
+			loadMsg: "loading data, please wait...",
+		});
+		$('#dg4').datagrid({
+			pagination:false,
+			fitColumns:false,
+			loadMsg: "loading data, please wait...",
+		});
+		$('#dg5').datagrid({
+			pagination:false,
+			fitColumns:false,
+			loadMsg: "loading data, please wait...",
+		});
+        var c = $('#cur1').val();
+        var s0 = s00.replace(/C1/, c);
+        var pdma = $('#pdma').val();
+        var pd = pdma.split('_')[0];
+        var ma = pdma.split('_')[1];
+        s0 = s0.replace(/MA/, ma);
+		s0 = s0.replace(/PD/, pd);
+        //console.log(s0);
+		//get_data(s0, "show_data0");
+		chg_cur();
+		$('#cur1').change(chg_cur);
+		$('#cur2').change(chg_cur);
+		$('#stg1').change(chg_stg);
+		$('#stg2').change(chg_stg);
+		$('#pdma').change(chg_ma);
+    });
+    </script>
+</body>
+</html>

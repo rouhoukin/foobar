@@ -645,8 +645,8 @@ def main(argv):
                 df5['p'] = 0
                 df5.loc[df5['success'] > 0, 'p'] = df5['ma_120_600_pft']
                 df5['r'] = 0
-                df5.loc[df5['p'] >= 0, 'r'] = 0
-                df5.loc[df5['p'] < 0, 'r'] = df5['p'].abs()
+                df5.loc[df5['p'] > 0, 'r'] = 0
+                df5.loc[df5['p'] == 0, 'r'] = df5['ma_120_600_pft'].abs()
                 # df5.loc[df5['r'] > 0, 'pr'] = df5['p'] / df5['r']
                 # df5.loc[df5['r'] > 0, 'pmr'] = df5['p_max'] / df5['r']
 
@@ -673,6 +673,452 @@ def main(argv):
             pass
 
         logger.info("{0} Generate mt5 ana's agg data end".format(method))
+
+    elif method == '4':     # gen mt5 ana stgs  data
+        logger.info("{0} Generate mt5 ana stgs data...".format(method))
+        now = datetime.now()
+        stgs = [
+            '120_5',
+        ]
+        mass = {
+                'H1': {'W1': ['m', 'b', 'bb'], 'D1': ['s', 'm', 'b']},
+                }
+        for target in paras.keys():
+            r = paras[target][1]
+            peds = paras[target][2]
+            for ped in peds:
+                if not ped in mass:
+                    continue
+                mas = mass[ped]
+                for ma in mas.keys():
+                    mp = mas[ma][0]
+                    mp2 = mas[ma][1]
+                    mp3 = mas[ma][2]
+                    for stg in stgs:
+                        logger.info("Process {0} {1} {2} ...".format(target, ped, stg))
+                        col_nm = broker + '_MT5_ANA_STG'
+                        # if True:
+                        if force_rebuild:
+                            query = {"key": {"$regex": "{0} {2} {1}".format(target, stg, ped)}}
+                            delete_from_db(clt=client, colnm=col_nm, qry=query)
+
+                        query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)}}
+                        if force_from:
+                            query["start"] = {"$lt": force_from}
+                        _, latest_dt = get_newest_from_db3(clt=client, colnm=col_nm, fld='start', qry=query, bak=2)
+                        first = False
+                        if latest_dt:
+                            latest_dt = latest_dt
+                        else:
+                            first = True
+                            col_nm2 = broker + '_' + target + '_MT5_ANA_AGG'
+                            query = {"key": {"$regex": "^{0} {1} {2}".format(target, ped, stg)}}
+                            first_dt, _ = get_first_from_db3(clt=client, colnm=col_nm2, fld='start', qry=query)
+                            latest_dt = first_dt
+                        # for test
+                        # latest_dt = "2023-07-21 17:58:00"
+                        last_dt = parse(latest_dt)
+                        print(last_dt)
+                        # exit(0)
+                        if force_from and latest_dt:
+                            # delete STG data
+                            col_nm = broker + '_MT5_ANA_STG'
+                            query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)},
+                                     "start": {"$gte": latest_dt}}
+                            delete_from_db(clt=client, colnm=col_nm, qry=query)
+                        # exit(0)
+                        col_nm = broker + '_' + target + '_MT5_ANA_AGG'
+                        query = {"key": {"$regex": "^{0} {1} {2}".format(target, ped, stg)},
+                                 "start": {"$gte": "{0}".format(last_dt.strftime('%Y-%m-%d %H:%M:%S'))}}
+                        df = read_df_from_db(clt=client, colnm=col_nm, qry=query)
+                        if df.empty:
+                            continue
+                        # df.to_csv('out/out.csv', encoding='gbk', index=True)
+                        # df.to_pickle('out/out_pickle')
+                        # exit(0)
+                        # df = pd.DataFrame()
+                        # df = pd.read_pickle('out/out_pickle')
+                        # TODO: 4 -2025/2/2
+                        key = '{0}{1}'.format(mp, stg)
+                        '''
+                        flt = pd.DataFrame()
+                        if key == 'sBB3':
+                            flt=df
+                        else:
+                            flt=df.copy()
+                            pass
+                        if flt.empty:
+                            continue
+                        df2 = flt.copy()
+                        '''
+                        df2 = df.copy()
+                        df2['stg'] = stg
+                        df2['stg_desp'] = stg
+                        df3 = df2[
+                            ['name', 'stg', 'stg_desp', 'year', 'month', 'week', 'week2', 'day', 'day2', 'day3',
+                             'period',
+                             'grp',
+                             'success', 'fail',
+                             'start', 'end', 'p', 'r',
+                             't', 'p_max', 'type',
+                             ]].copy()
+                        # df3 = df2.copy()
+                        df3['key'] = df3['name'] + ' ' + ped + ' ' + df3['stg'] + ' ' + df3['start']
+                        df3['UPD_BY'] = now.strftime('%Y-%m-%d %H:%M:%S')
+                        # df3_1.to_csv('out/out3_1.csv', encoding='gbk', index=True)
+                        # df3_1.to_pickle('out/out_pickle3_1')
+                        col_nm = '{0}_MT5_ANA_STG'.format(broker)
+                        collection = client['foobar'][col_nm]
+                        collection.create_index([('start', pymongo.ASCENDING)], unique=False)
+                        collection.create_index([('end', pymongo.ASCENDING)], unique=False)
+                        write_df_to_db(df=df3, clt=client, colnm=col_nm)
+
+            pass
+
+        logger.info("{0} Generate mt5 ana's stg data end".format(method))
+
+    elif method == '5':     # gen stg ana fin data
+        logger.info("{0} Generate mt5 ana stg fin data...".format(method))
+        now = datetime.now()
+        # TODO: 5 -2025/2/2
+        mass = {
+                'H1': {'W1': 'b', 'D1': 'm'},
+                }
+        stgs = [
+                '120_5',
+        ]
+        for target in paras.keys():
+            r = paras[target][1]
+            peds = paras[target][2]
+            for ped in peds:
+                mas = mass[ped]
+                for ma in mas.keys():
+                    # mp = mas[ma]
+                    for stg in stgs:
+                        col_nm = broker + '_MT5_ANA_STG_FIN'
+                        # if True:
+                        if force_rebuild:
+                            query = {"key": {"$regex": "{0} {3} {1} {2}".format(target, stg, '[1-5]', ped)}}
+                            delete_from_db(clt=client, colnm=col_nm, qry=query)
+
+                        # for single
+                        col_nm = broker + '_MT5_ANA_STG'
+                        collection = client['foobar'][col_nm]
+                        collection.create_index([
+                            ('name', pymongo.ASCENDING), ('period', pymongo.ASCENDING),
+                            ('stg', pymongo.ASCENDING),
+                        ])
+                        collection.create_index([
+                            ('name', pymongo.ASCENDING), ('period', pymongo.ASCENDING),
+                            ('stg', pymongo.ASCENDING),
+                            ('year', pymongo.ASCENDING), ('month', pymongo.ASCENDING),
+                            ('week', pymongo.ASCENDING), ('day', pymongo.ASCENDING),
+                        ])
+
+                        # for daily
+                        logger.info("Process {0} {1} {2} for daily ...".format(target, ped, stg))
+                        col_nm = broker + '_MT5_ANA_STG_FIN'
+                        query = {"key": {"$regex": "^{0} {3} {1} {2}".format(target, stg, '2', ped)}}
+                        if force_from:
+                            query["start"] = {"$lt": force_from}
+                        # _, latest_dt = get_newest_from_db3(clt=client_rmt, colnm=col_nm, fld='end', qry=query, bak=2)
+                        latest_dt, _ = get_newest_from_db3(clt=client, colnm=col_nm, fld='start', qry=query, bak=2)
+                        first = False
+                        if not latest_dt:
+                            first = True
+                            col_nm2 = broker + '_MT5_ANA_STG'
+                            query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)}}
+                            first_dt, _ = get_first_from_db3(clt=client, colnm=col_nm2, fld='start', qry=query)
+                            latest_dt = first_dt
+                        if not latest_dt:
+                            continue
+                        last_dt = parse(latest_dt)
+                        # print(last_dt)
+                        # day
+                        last_dt2 = parse(last_dt.strftime("%Y/%m/%d"))
+                        print(last_dt2)
+                        # exit(0)
+                        col_nm = broker + '_MT5_ANA_STG'
+                        query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)},
+                                 "start": {"$gte": "{0}".format(last_dt2.strftime('%Y-%m-%d %H:%M:%S'))}}
+                        df = read_df_from_db(clt=client, colnm=col_nm, qry=query)
+                        if len(df.index) == 0:
+                            continue
+                        aggfunc = {
+                            'name': [('name', 'first')],
+                            'stg': [('stg', 'first')],
+                            'stg_desp': [('stg_desp', 'first')],
+                            'start': [('start', 'first')],
+                            'end': [('end', 'last')],
+                            'year': [('year', 'first')],
+                            'month': [('month', 'first')],
+                            'week': [('week', 'first')],
+                            'day': [('day', 'first')],
+                            'period': [('period', 'first')],
+                            'success': [('success', 'sum')],
+                            'fail': [('fail', 'sum')],
+                            'p': [('p', 'mean'), ('p_sum', 'sum')],
+                            'r': [('r', 'mean'), ('r_sum', 'sum')],
+                            't': [('t', 'mean')],
+                            'p_max': [('p_max', 'mean'), ('p_max_s', 'sum')],
+                        }
+                        v = df.groupby(df['day2']).agg(aggfunc)
+                        v.columns = v.columns.droplevel(0)
+                        df3_2 = v.reset_index()
+                        df3_2 = df3_2[
+                            ['name', 'stg', 'stg_desp', 'year', 'month', 'week', 'day', 'period',
+                             'success', 'fail', 'start', 'end', 'p', 'r',
+                             't', 'p_max', 'p_sum','r_sum', 'p_max_s']]
+                        df3_2['stg_sub'] = '2'
+                        df3_2['stg_sub_desp'] = 'day'
+                        df3_2.loc[df3_2['r_sum'] > 0, 'prs'] = df3_2['p_sum'] / df3_2['r_sum']
+                        df3_2['prs'] = round(df3_2['prs'], 1)
+                        df3_2['p'] = round(df3_2['p'], 1)
+                        df3_2['r'] = round(df3_2['r'], 1)
+                        df3_2['t'] = round(df3_2['t'], 1)
+                        df3_2['p_max'] = round(df3_2['p_max'], 1)
+                        df3_2['p_sum'] = round(df3_2['p_sum'], 1)
+                        df3_2['r_sum'] = round(df3_2['r_sum'], 1)
+                        df3_2['p_max_s'] = round(df3_2['p_max_s'], 1)
+                        df3_2['key'] = df3_2['name'] + ' ' + ped + ' ' + df3_2['stg'] + ' ' + df3_2['stg_sub'].astype(str) + ' ' + \
+                                       df3_2['year'].astype(str) + ' ' + df3_2['week'].astype(str) + ' ' + df3_2['day'].astype(str)
+                        df3_2['UPD_BY'] = now.strftime('%Y-%m-%d %H:%M:%S')
+                        # df3_2.to_csv('out/out3_2.csv', encoding='gbk', index=True)
+                        # df3_2.to_pickle('out/out_pickle3_2')
+                        col_nm = broker + '_MT5_ANA_STG_FIN'
+                        collection = client['foobar'][col_nm]
+                        collection.create_index([
+                            ('name', pymongo.ASCENDING), ('period', pymongo.ASCENDING),
+                            ('stg', pymongo.ASCENDING), ('stg_sub', pymongo.ASCENDING),
+                            ('year', pymongo.ASCENDING), ('month', pymongo.ASCENDING),
+                            ('week', pymongo.ASCENDING), ('day', pymongo.ASCENDING),
+                        ])
+                        collection.create_index([('start', pymongo.ASCENDING)], unique=False)
+                        collection.create_index([('end', pymongo.ASCENDING)], unique=False)
+                        write_df_to_db(df=df3_2, clt=client, colnm=col_nm)
+                        # write_df_many_to_db(df=df3_2, clt=client_rmt, colnm=col_nm)
+                        # exit(0)
+
+                        # for weekly
+                        logger.info("Process {0} {2} {1} for weekly ...".format(target, stg, ped))
+                        col_nm = broker + '_MT5_ANA5_STG_FIN'
+                        query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, '3', ped)}}
+                        if force_from:
+                            query["start"] = {"$lt": force_from}
+                        # _, latest_dt = get_newest_from_db3(clt=client_rmt, colnm=col_nm, fld='end', qry=query, bak=2)
+                        latest_dt, _ = get_newest_from_db3(clt=client, colnm=col_nm, fld='start', qry=query, bak=2)
+                        first = False
+                        if not latest_dt:
+                            first = True
+                            col_nm2 = broker + '_MT5_ANA_STG'
+                            query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)}}
+                            first_dt, _ = get_first_from_db3(clt=client, colnm=col_nm2, fld='start', qry=query)
+                            latest_dt = first_dt
+                        if not latest_dt:
+                            continue
+                        last_dt = parse(latest_dt)
+                        # print(last_dt)
+                        # week
+                        s = last_dt.strftime("%Y(%W)(1)")
+                        print(s)
+                        last_dt3 = datetime.strptime(s, "%Y(%W)(%w)")
+                        print(last_dt3)
+                        # exit(0)
+
+                        col_nm = broker + '_MT5_ANA_STG'
+                        query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)},
+                                 "start": {"$gte": "{0}".format(last_dt3.strftime('%Y-%m-%d %H:%M:%S'))}}
+                        df = read_df_from_db(clt=client, colnm=col_nm, qry=query)
+                        if len(df.index) == 0:
+                            continue
+                        aggfunc = {
+                            'name': [('name', 'first')],
+                            'stg': [('stg', 'first')],
+                            'stg_desp': [('stg_desp', 'first')],
+                            'start': [('start', 'first')],
+                            'end': [('end', 'last')],
+                            'year': [('year', 'first')],
+                            'month': [('month', 'first')],
+                            'week': [('week', 'first')],
+                            'period': [('period', 'first')],
+                            'success': [('success', 'sum')],
+                            'fail': [('fail', 'sum')],
+                            'p': [('p', 'mean'), ('p_sum', 'sum')],
+                            'r': [('r', 'mean'), ('r_sum', 'sum')],
+                            't': [('t', 'mean')],
+                            'p_max': [('p_max', 'mean'), ('p_max_s', 'sum')],
+                        }
+                        v = df.groupby(df['week2']).agg(aggfunc)
+                        v.columns = v.columns.droplevel(0)
+                        df3_3 = v.reset_index()
+                        df3_3 = df3_3[
+                            ['name', 'stg', 'stg_desp', 'year', 'month', 'week', 'period',
+                             'success', 'fail', 'start', 'end', 'p', 'r',
+                             't', 'p_max', 'p_sum', 'r_sum', 'p_max_s', ]]
+                        df3_3['stg_sub'] = '3'
+                        df3_3['stg_sub_desp'] = 'week'
+                        df3_3.loc[df3_3['r_sum'] > 0, 'prs'] = df3_3['p_sum'] / df3_3['r_sum']
+                        df3_3['prs'] = round(df3_3['prs'], 1)
+                        df3_3['p'] = round(df3_3['p'], 1)
+                        df3_3['r'] = round(df3_3['r'], 1)
+                        df3_3['t'] = round(df3_3['t'], 1)
+                        df3_3['p_max'] = round(df3_3['p_max'], 1)
+                        df3_3['p_sum'] = round(df3_3['p_sum'], 1)
+                        df3_3['r_sum'] = round(df3_3['r_sum'], 1)
+                        df3_3['p_max_s'] = round(df3_3['p_max_s'], 1)
+                        df3_3['key'] = df3_3['name'] + ' ' + ped + ' ' + df3_3['stg'] + ' ' + df3_3['stg_sub'].astype(str) + ' ' + \
+                                       df3_3['year'].astype(str) + ' ' + df3_3['week'].astype(str)
+                        df3_3['UPD_BY'] = now.strftime('%Y-%m-%d %H:%M:%S')
+                        # df3_3.to_csv('out/out3_3.csv', encoding='gbk', index=True)
+                        # df3_3.to_pickle('out/out_pickle3_3')
+                        col_nm = broker + '_MT5_ANA_STG_FIN'
+                        write_df_to_db(df=df3_3, clt=client, colnm=col_nm)
+                        # exit(0)
+
+                        # for monthly
+                        logger.info("Process {0} {2} {1} for monthly ...".format(target, ped, stg))
+                        col_nm = broker + '_MT5_ANA_STG_FIN'
+                        query = {"key": {"$regex": "^{0} {3} {1} {2}".format(target, stg, '4', ped)}}
+                        if force_from:
+                            query["start"] = {"$lt": force_from}
+                        # _, latest_dt = get_newest_from_db3(clt=client_rmt, colnm=col_nm, fld='end', qry=query, bak=2)
+                        latest_dt, _ = get_newest_from_db3(clt=client, colnm=col_nm, fld='start', qry=query, bak=2)
+                        first = False
+                        if not latest_dt:
+                            first = True
+                            col_nm2 = broker + '_MT5_ANA_STG'
+                            query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)}}
+                            first_dt, _ = get_first_from_db3(clt=client, colnm=col_nm2, fld='start', qry=query)
+                            latest_dt = first_dt
+                        if not latest_dt:
+                            continue
+                        last_dt = parse(latest_dt)
+                        # print(last_dt)
+                        # month
+                        last_dt4 = parse(last_dt.strftime("%Y/%m/1"))
+                        print(last_dt4)
+                        # exit(0)
+
+                        col_nm = broker + '_MT5_ANA_STG'
+                        query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)},
+                                 "start": {"$gte": "{0}".format(last_dt4.strftime('%Y-%m-%d %H:%M:%S'))}}
+                        df = read_df_from_db(clt=client, colnm=col_nm, qry=query)
+                        if len(df.index) == 0:
+                            continue
+                        aggfunc = {
+                            'name': [('name', 'first')],
+                            'stg': [('stg', 'first')],
+                            'stg_desp': [('stg_desp', 'first')],
+                            'start': [('start', 'first')],
+                            'end': [('end', 'last')],
+                            'period': [('period', 'first')],
+                            'success': [('success', 'sum')],
+                            'fail': [('fail', 'sum')],
+                            'p': [('p', 'mean'), ('p_sum', 'sum')],
+                            'r': [('r', 'mean'), ('r_sum', 'sum')],
+                            't': [('t', 'mean')],
+                            'p_max': [('p_max', 'mean'), ('p_max_s', 'sum')],
+                        }
+                        v = df.groupby([df['year'], df['month']]).agg(aggfunc)
+                        v.columns = v.columns.droplevel(0)
+                        df3_4 = v.reset_index()
+                        df3_4 = df3_4[
+                            ['name', 'stg', 'stg_desp', 'year', 'month', 'period',
+                             'success', 'fail', 'start', 'end', 'p', 'r',
+                             't', 'p_max', 'p_sum', 'r_sum', 'p_max_s', ]]
+                        df3_4['stg_sub'] = '4'
+                        df3_4['stg_sub_desp'] = 'month'
+                        df3_4.loc[df3_4['r_sum'] > 0, 'prs'] = df3_4['p_sum'] / df3_4['r_sum']
+                        df3_4['prs'] = round(df3_4['prs'], 1)
+                        df3_4['p'] = round(df3_4['p'], 1)
+                        df3_4['r'] = round(df3_4['r'], 1)
+                        df3_4['t'] = round(df3_4['t'], 1)
+                        df3_4['p_max'] = round(df3_4['p_max'], 1)
+                        df3_4['p_sum'] = round(df3_4['p_sum'], 1)
+                        df3_4['r_sum'] = round(df3_4['r_sum'], 1)
+                        df3_4['p_max_s'] = round(df3_4['p_max_s'], 1)
+                        df3_4['key'] = df3_4['name'] + ' ' + ped + ' ' + df3_4['stg'] + ' ' + df3_4['stg_sub'].astype(str) + ' ' + \
+                                       df3_4['year'].astype(str) + ' ' + df3_4['month'].astype(str)
+                        df3_4['UPD_BY'] = now.strftime('%Y-%m-%d %H:%M:%S')
+                        # df3_4.to_csv('out/out3_4.csv', encoding='gbk', index=True)
+                        # df3_4.to_pickle('out/out_pickle3_4')
+                        col_nm = broker + '_MT5_ANA_STG_FIN'
+                        write_df_to_db(df=df3_4, clt=client, colnm=col_nm)
+                        # write_df_many_to_db(df=df3_4, clt=client_rmt, colnm=col_nm)
+                        # exit(0)
+
+                        # for yearly
+                        logger.info("Process {0} {1} {2} for yearly ...".format(target, ped, stg))
+                        col_nm = broker + '_MT5_ANA_STG_FIN'
+                        query = {"key": {"$regex": "^{0} {3} {1} {2}".format(target, stg, '5', ped)}}
+                        if force_from:
+                            query["start"] = {"$lt": force_from}
+                        # _, latest_dt = get_newest_from_db3(clt=client_rmt, colnm=col_nm, fld='end', qry=query, bak=2)
+                        latest_dt, _ = get_newest_from_db3(clt=client, colnm=col_nm, fld='start', qry=query, bak=2)
+                        first = False
+                        if not latest_dt:
+                            first = True
+                            col_nm2 = broker + '_MT5_ANA_STG'
+                            query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)}}
+                            first_dt, _ = get_first_from_db3(clt=client, colnm=col_nm2, fld='start', qry=query)
+                            latest_dt = first_dt
+                        if not latest_dt:
+                            continue
+                        last_dt = parse(latest_dt)
+                        # print(last_dt)
+                        # year
+                        last_dt5 = parse(last_dt.strftime("%Y/1/1"))
+                        print(last_dt5)
+                        # exit(0)
+
+                        col_nm = broker + '_MT5_ANA_STG'
+                        query = {"key": {"$regex": "^{0} {2} {1}".format(target, stg, ped)},
+                                 "start": {"$gte": "{0}".format(last_dt5.strftime('%Y-%m-%d %H:%M:%S'))}}
+                        df = read_df_from_db(clt=client, colnm=col_nm, qry=query)
+                        if len(df.index) == 0:
+                            continue
+                        aggfunc = {
+                            'name': [('name', 'first')],
+                            'stg': [('stg', 'first')],
+                            'stg_desp': [('stg_desp', 'first')],
+                            'start': [('start', 'first')],
+                            'end': [('end', 'last')],
+                            # 'year': [('year', 'first')],
+                            'period': [('period', 'first')],
+                            'success': [('success', 'sum')],
+                            'fail': [('fail', 'sum')],
+                            'p': [('p', 'mean'), ('p_sum', 'sum')],
+                            'r': [('r', 'mean'), ('r_sum', 'sum')],
+                            't': [('t', 'mean')],
+                            'p_max': [('p_max', 'mean'), ('p_max_s', 'sum')],
+                        }
+                        v = df.groupby(df['year']).agg(aggfunc)
+                        v.columns = v.columns.droplevel(0)
+                        df3_5 = v.reset_index()
+                        df3_5 = df3_5[
+                            ['name', 'stg', 'stg_desp', 'year', 'period',
+                             'success', 'fail', 'start', 'end', 'p', 'r',
+                             't', 'p_max', 'p_sum', 'r_sum', 'p_max_s', ]]
+                        df3_5['stg_sub'] = '5'
+                        df3_5['stg_sub_desp'] = 'year'
+                        df3_5.loc[df3_5['r_sum'] > 0, 'prs'] = df3_5['p_sum'] / df3_5['r_sum']
+                        df3_5['prs'] = round(df3_5['prs'], 1)
+                        df3_5['p'] = round(df3_5['p'], 1)
+                        df3_5['r'] = round(df3_5['r'], 1)
+                        df3_5['t'] = round(df3_5['t'], 1)
+                        df3_5['p_max'] = round(df3_5['p_max'], 1)
+                        df3_5['p_sum'] = round(df3_5['p_sum'], 1)
+                        df3_5['r_sum'] = round(df3_5['r_sum'], 1)
+                        df3_5['p_max_s'] = round(df3_5['p_max_s'], 1)
+                        df3_5['key'] = df3_5['name'] + ' ' + ped + ' ' + df3_5['stg'] + ' ' + df3_5['stg_sub'].astype(str) + \
+                                       ' ' + df3_5['year'].astype(str)
+                        df3_5['UPD_BY'] = now.strftime('%Y-%m-%d %H:%M:%S')
+                        # df3_5.to_csv('out/out3_5.csv', encoding='gbk', index=True)
+                        # df3_5.to_pickle('out/out_pickle3_5')
+                        col_nm = broker + '_MT5_ANA_STG_FIN'
+                        # collection = client_rmt['fx'][col_nm]
+                        write_df_to_db(df=df3_5, clt=client, colnm=col_nm)
+                        # exit(0)
 
 
 # TODO: main

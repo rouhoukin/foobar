@@ -1,0 +1,7 @@
+本路径收录知乎上的演示程序。
+使用方法：
+python demo.py -m 1     //import MT5's data
+python demo.py -m 2     //add analysis data
+python demo.py -m 3     //add grouping data
+内含调试代码。
+欢迎使用！
